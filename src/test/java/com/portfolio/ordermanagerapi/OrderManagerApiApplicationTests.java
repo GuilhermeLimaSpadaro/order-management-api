@@ -1,4 +1,4 @@
-package com.portfolio.order_manager_api;
+package com.portfolio.ordermanagerapi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
