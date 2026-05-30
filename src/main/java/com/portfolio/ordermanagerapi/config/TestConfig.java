@@ -71,6 +71,10 @@ public class TestConfig implements CommandLineRunner {
         o2.setClient(u2);
         o3.setClient(u3);
 
+        Payment pay = new Payment(null, o1.getMoment(), o1);
+
+        o1.setPayment(pay);
+
         orderRepository.saveAll(List.of(o1, o2, o3));
 
         OrderItem oi1 = new OrderItem(o1, p1, 2, p1.getPrice());

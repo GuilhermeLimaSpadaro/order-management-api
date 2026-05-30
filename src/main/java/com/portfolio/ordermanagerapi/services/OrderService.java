@@ -1,8 +1,12 @@
 package com.portfolio.ordermanagerapi.services;
 
+import com.portfolio.ordermanagerapi.exceptions.DatabaseException;
+import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import com.portfolio.ordermanagerapi.model.Order;
+import com.portfolio.ordermanagerapi.model.User;
 import com.portfolio.ordermanagerapi.repositories.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,14 +14,45 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    @Autowired
-    private OrderRepository OrderRepository;
+    private OrderRepository orderRepository;
+
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
+
+    public Order insert(Order order) {
+        return orderRepository.save(order);
+    }
+
+    public void delete(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        try {
+            orderRepository.delete(order);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
+    }
+
+    public Order update(Long id, Order order) {
+        try {
+            Order entity = orderRepository.getReferenceById(id);
+            updateEntity(entity, order);
+            return orderRepository.save(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
+    }
+
+    public void updateEntity(Order entity, Order obj) {
+        entity.setOrderStatus(obj.getOrderStatus());
+        entity.setPayment(obj.getPayment());
+    }
 
     public Order findOrderById(Long id) {
-        return OrderRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario nao existe!"));
+        return orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public List<Order> findAll() {
-        return OrderRepository.findAll();
+        return orderRepository.findAll();
     }
 }
