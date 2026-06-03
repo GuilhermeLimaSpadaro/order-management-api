@@ -13,18 +13,20 @@ public class StandardError implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd't'HH:mm:ss")
-    LocalDateTime timestamp;
-    Integer status;
-    String error;
-    String path;
+    private LocalDateTime timestamp;
+    private Integer status;
+    private String error;
+    private String message;
+    private String path;
 
     public StandardError() {
     }
 
-    public StandardError(LocalDateTime timestamp, Integer status, String error, String path) {
+    public StandardError(LocalDateTime timestamp, Integer status, String error, String message, String path) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
+        this.message = message;
         this.path = path;
     }
 
@@ -50,6 +52,14 @@ public class StandardError implements Serializable {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getPath() {
