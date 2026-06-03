@@ -4,7 +4,9 @@ import com.portfolio.ordermanagerapi.model.Product;
 import com.portfolio.ordermanagerapi.services.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,8 +20,10 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> save(@RequestBody Product product) {
-        return ResponseEntity.ok().body(productService.save(product));
+    public ResponseEntity<Product> insert(@RequestBody Product product) {
+        product = productService.insert(product);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(product.getId()).toUri();
+        return ResponseEntity.created(uri).body(product);
     }
 
     @DeleteMapping("/{id}")

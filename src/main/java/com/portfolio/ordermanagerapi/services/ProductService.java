@@ -2,6 +2,7 @@ package com.portfolio.ordermanagerapi.services;
 
 import com.portfolio.ordermanagerapi.model.Product;
 import com.portfolio.ordermanagerapi.repositories.ProductRepository;
+import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +16,29 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Product save(Product Product) {
+    public Product insert(Product Product) {
         return productRepository.save(Product);
     }
 
     public void delete(Long id) {
-        Product Product = productRepository.findById(id).orElseThrow(() -> new NullPointerException("Pedido nao encontrado!"));
+        Product Product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
         productRepository.delete(Product);
     }
 
+    public Product update(Long id, Product product) {
+        Product entity = productRepository.getReferenceById(id);
+        updateEntity(entity, product);
+        return productRepository.save(entity);
+    }
+
+    public void updateEntity(Product entity, Product product) {
+        entity.setName(product.getName());
+        entity.setDescription(product.getDescription());
+        entity.setPrice(product.getPrice());
+    }
+
     public Product findProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario nao existe!"));
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     public List<Product> findAll() {
