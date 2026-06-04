@@ -2,50 +2,50 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>API Tester - Order System</title>
+    <title>Painel de Teste da API</title>
 
     <style>
-        body {
+        * {
           margin: 0;
+          padding: 0;
+          box-sizing: border-box;
           font-family: Arial;
-          display: flex;
-          background: #f5f7fa;
-          color: #0f172a;
         }
 
-        /* SIDEBAR */
-        .sidebar {
-          width: 240px;
-          background: #013220;
+        body {
+          display: flex;
           height: 100vh;
-          padding: 20px;
+          background: #f4f6f9;
+        }
+
+        /* MENU */
+        .sidebar {
+          width: 220px;
+          background: #111827;
           color: white;
+          padding: 20px;
         }
 
         .sidebar h2 {
-          color: #ffffff;
           margin-bottom: 20px;
         }
 
         .sidebar button {
           width: 100%;
-          margin-bottom: 10px;
           padding: 10px;
-          border: 0;
+          margin-bottom: 10px;
+          background: #1f2937;
+          border: none;
+          color: white;
           cursor: pointer;
-          background: white;
-          color: #013220;
-          font-weight: bold;
-          text-align: left;
-          border-left: 4px solid transparent;
+          border-radius: 6px;
         }
 
         .sidebar button:hover {
-          border-left: 4px solid #16a34a;
-          background: #eaffea;
+          background: #374151;
         }
 
-        /* MAIN */
+        /* CONTEÚDO */
         .main {
           flex: 1;
           padding: 20px;
@@ -53,322 +53,248 @@
 
         .card {
           background: white;
-          padding: 15px;
+          padding: 20px;
           border-radius: 10px;
-          margin-bottom: 15px;
-          border: 1px solid #e5e7eb;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-
-        h3 {
-          color: #013220;
+          max-width: 650px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         input {
           width: 100%;
-          margin: 5px 0;
           padding: 10px;
-          border: 1px solid #d1d5db;
-          border-radius: 5px;
+          margin-bottom: 10px;
+          border-radius: 6px;
+          border: 1px solid #ddd;
         }
 
         button.action {
           width: 100%;
           padding: 10px;
-          margin-top: 5px;
-          border: 0;
-          background: #16a34a;
+          background: #2563eb;
           color: white;
-          font-weight: bold;
+          border: none;
+          border-radius: 6px;
           cursor: pointer;
-          border-radius: 5px;
         }
 
-        button.action:hover {
-          background: #15803d;
-        }
+        .section { display: none; }
+        .active { display: block; }
 
-        pre {
-          background: #0f172a;
-          color: #22c55e;
-          padding: 10px;
-          border-radius: 5px;
-          overflow: auto;
-        }
-
-        .hidden { display:none; }
-
-        .tag {
-          font-size: 12px;
-          color: #16a34a;
-        }
+        label { display: block; margin-bottom: 5px; }
     </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-    <h2>⚽ API TEST</h2>
+    <h2>PAINEL API</h2>
 
-    <button onclick="show('users')">👤 Users</button>
-    <button onclick="show('products')">📦 Products</button>
-    <button onclick="show('categories')">🏷 Categories</button>
-    <button onclick="show('orders')">🧾 Orders</button>
+    <button onclick="abrir('produto')">Produto</button>
+    <button onclick="abrir('categoria')">Categoria</button>
 </div>
 
 <div class="main">
 
-    <!-- USERS -->
-    <div id="users" class="card">
-        <h3>Users <span class="tag">CRUD</span></h3>
+    <!-- PRODUTO -->
+    <div id="produto" class="section active">
+        <div class="card">
 
-        <input id="u_id" placeholder="ID">
-        <input id="u_name" placeholder="Name">
-        <input id="u_email" placeholder="Email">
+            <h2>Produto</h2>
 
-        <button class="action" onclick="getUser()">GET BY ID</button>
-        <button class="action" onclick="getUsers()">GET ALL</button>
-        <button class="action" onclick="createUser()">POST</button>
-        <button class="action" onclick="updateUser()">PUT</button>
-        <button class="action" onclick="deleteUser()">DELETE</button>
+            <select id="acaoProduto" onchange="renderProduto()">
+                <option value="buscar">Buscar por ID</option>
+                <option value="criar">Criar</option>
+                <option value="deletar">Deletar</option>
+            </select>
 
-        <pre id="userOut"></pre>
+            <div id="formProduto"></div>
+
+        </div>
     </div>
 
-    <!-- PRODUCTS -->
-    <div id="products" class="card hidden">
-        <h3>Products <span class="tag">CRUD</span></h3>
+    <!-- CATEGORIA -->
+    <div id="categoria" class="section">
+        <div class="card">
 
-        <input id="p_id" placeholder="ID">
-        <input id="p_name" placeholder="Name">
-        <input id="p_price" placeholder="Price">
+            <h2>Categoria</h2>
 
-        <button class="action" onclick="getProduct()">GET BY ID</button>
-        <button class="action" onclick="getProducts()">GET ALL</button>
-        <button class="action" onclick="createProduct()">POST</button>
-        <button class="action" onclick="updateProduct()">PUT</button>
-        <button class="action" onclick="deleteProduct()">DELETE</button>
+            <select id="acaoCategoria" onchange="renderCategoria()">
+                <option value="buscar">Buscar por ID</option>
+                <option value="criar">Criar</option>
+                <option value="deletar">Deletar</option>
+            </select>
 
-        <pre id="productOut"></pre>
-    </div>
+            <div id="formCategoria"></div>
 
-    <!-- CATEGORIES -->
-    <div id="categories" class="card hidden">
-        <h3>Categories <span class="tag">CRUD</span></h3>
-
-        <input id="c_id" placeholder="ID">
-        <input id="c_name" placeholder="Name">
-
-        <button class="action" onclick="getCategory()">GET BY ID</button>
-        <button class="action" onclick="getCategories()">GET ALL</button>
-        <button class="action" onclick="createCategory()">POST</button>
-        <button class="action" onclick="updateCategory()">PUT</button>
-        <button class="action" onclick="deleteCategory()">DELETE</button>
-
-        <pre id="categoryOut"></pre>
-    </div>
-
-    <!-- ORDERS -->
-    <div id="orders" class="card hidden">
-        <h3>Orders <span class="tag">User + Product relation</span></h3>
-
-        <input id="o_id" placeholder="Order ID">
-        <input id="o_userId" placeholder="User ID">
-        <input id="o_productId" placeholder="Product ID">
-        <input id="o_qty" placeholder="Quantity">
-        <input id="o_price" placeholder="Price">
-
-        <button class="action" onclick="createOrder()">POST</button>
-        <button class="action" onclick="getOrder()">GET BY ID</button>
-        <button class="action" onclick="getOrders()">GET ALL</button>
-        <button class="action" onclick="updateOrder()">PUT (PAID)</button>
-        <button class="action" onclick="deleteOrder()">DELETE</button>
-
-        <pre id="orderOut"></pre>
+        </div>
     </div>
 
 </div>
 
 <script>
 
-    const API = "https://order-management-production-20f1.up.railway.app";
+    const API = "http://localhost:8080";
 
-    function show(id){
-      document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
+    /* MENU */
+    function abrir(sec) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(sec).classList.add('active');
     }
 
-    /* ================= USERS ================= */
-    function getUser(){
-    fetch(`${API}/users/${u_id.value}`)
-    .then(r=>r.json()).then(d=>userOut(d));
+    /* ================= PRODUTO ================= */
+
+    function renderProduto() {
+      const acao = document.getElementById("acaoProduto").value;
+      const div = document.getElementById("formProduto");
+
+      if (acao === "buscar") {
+        div.innerHTML = `
+          <input id="idProduto" placeholder="ID do produto">
+          <button class="action" onclick="buscarProduto()">Buscar</button>
+        `;
+      }
+
+      if (acao === "criar") {
+        div.innerHTML = `
+          <input id="nomeProduto" placeholder="Nome">
+          <input id="descricaoProduto" placeholder="Descrição">
+          <input id="precoProduto" placeholder="Preço">
+
+          <h4>Categorias</h4>
+          <div id="categoriasBox"></div>
+
+          <button class="action" onclick="criarProduto()">Criar Produto</button>
+        `;
+
+        carregarCategorias();
+      }
+
+      if (acao === "deletar") {
+        div.innerHTML = `
+          <input id="idProdutoDel" placeholder="ID do produto">
+          <button class="action" onclick="deletarProduto()">Deletar</button>
+        `;
+      }
     }
 
-    function getUsers(){
-    fetch(`${API}/users`)
-    .then(r=>r.json()).then(d=>userOut(d));
+    /* ================= CATEGORIA ================= */
+
+    function renderCategoria() {
+      const acao = document.getElementById("acaoCategoria").value;
+      const div = document.getElementById("formCategoria");
+
+      if (acao === "buscar") {
+        div.innerHTML = `
+          <input id="idCategoria" placeholder="ID da categoria">
+          <button class="action" onclick="buscarCategoria()">Buscar</button>
+        `;
+      }
+
+      if (acao === "criar") {
+        div.innerHTML = `
+          <input id="nomeCategoria" placeholder="Nome da categoria">
+          <button class="action" onclick="criarCategoria()">Criar</button>
+        `;
+      }
+
+      if (acao === "deletar") {
+        div.innerHTML = `
+          <input id="idCategoriaDel" placeholder="ID da categoria">
+          <button class="action" onclick="deletarCategoria()">Deletar</button>
+        `;
+      }
     }
 
-    function createUser(){
-    fetch(`${API}/users`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:u_name.value,
-    email:u_email.value
-    })
-    }).then(r=>r.json()).then(d=>userOut(d));
+    /* ================= CATEGORIAS MOCK ================= */
+
+    const categoriasMock = [
+      { id: 1, nome: "Comida" },
+      { id: 2, nome: "Bebidas" },
+      { id: 3, nome: "Fast Food" }
+    ];
+
+    function carregarCategorias() {
+      const box = document.getElementById("categoriasBox");
+      box.innerHTML = "";
+
+      categoriasMock.forEach(c => {
+        box.innerHTML += `
+          <label>
+            <input type="checkbox" value="${c.id}">
+            ${c.nome}
+          </label>
+        `;
+      });
     }
 
-    function updateUser(){
-    fetch(`${API}/users/${u_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:u_name.value,
-    email:u_email.value
-    })
-    }).then(r=>r.json()).then(d=>userOut(d));
+    /* ================= PRODUTO API ================= */
+
+    function criarProduto() {
+
+      const nome = document.getElementById("nomeProduto").value;
+      const descricao = document.getElementById("descricaoProduto").value;
+      const preco = document.getElementById("precoProduto").value;
+
+      const categorias = Array.from(
+        document.querySelectorAll("#categoriasBox input:checked")
+      ).map(c => ({ id: Number(c.value) }));
+
+      fetch(API + "/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nome,
+          description: descricao,
+          price: Number(preco),
+          categories: categorias
+        })
+      })
+      .then(r => r.json())
+      .then(() => alert("Produto criado"));
     }
 
-    function deleteUser(){
-    fetch(`${API}/users/${u_id.value}`,{method:"DELETE"})
-    .then(()=>userOut("deleted"));
+    function buscarProduto() {
+      const id = document.getElementById("idProduto").value;
+      fetch(API + "/products/" + id)
+      .then(r => r.json())
+      .then(d => console.log(d));
     }
 
-    function userOut(d){
-    document.getElementById("userOut").innerText = JSON.stringify(d,null,2);
+    function deletarProduto() {
+      const id = document.getElementById("idProdutoDel").value;
+      fetch(API + "/products/" + id, { method: "DELETE" })
+      .then(() => alert("Deletado"));
     }
 
-    /* ================= PRODUCTS ================= */
-    function getProduct(){
-    fetch(`${API}/products/${p_id.value}`)
-    .then(r=>r.json()).then(d=>productOut(d));
+    /* ================= CATEGORIA API ================= */
+
+    function criarCategoria() {
+      const nome = document.getElementById("nomeCategoria").value;
+
+      fetch(API + "/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: nome })
+      })
+      .then(() => alert("Categoria criada"));
     }
 
-    function getProducts(){
-    fetch(`${API}/products`)
-    .then(r=>r.json()).then(d=>productOut(d));
+    function buscarCategoria() {
+      const id = document.getElementById("idCategoria").value;
+      fetch(API + "/categories/" + id)
+      .then(r => r.json())
+      .then(d => console.log(d));
     }
 
-    function createProduct(){
-    fetch(`${API}/products`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:p_name.value,
-    price:Number(p_price.value)
-    })
-    }).then(r=>r.json()).then(d=>productOut(d));
+    function deletarCategoria() {
+      const id = document.getElementById("idCategoriaDel").value;
+      fetch(API + "/categories/" + id, { method: "DELETE" })
+      .then(() => alert("Deletado"));
     }
 
-    function updateProduct(){
-    fetch(`${API}/products/${p_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:p_name.value,
-    price:Number(p_price.value)
-    })
-    }).then(r=>r.json()).then(d=>productOut(d));
-    }
-
-    function deleteProduct(){
-    fetch(`${API}/products/${p_id.value}`,{method:"DELETE"})
-    .then(()=>productOut("deleted"));
-    }
-
-    function productOut(d){
-    document.getElementById("productOut").innerText = JSON.stringify(d,null,2);
-    }
-
-    /* ================= CATEGORIES ================= */
-    function getCategory(){
-    fetch(`${API}/categories/${c_id.value}`)
-    .then(r=>r.json()).then(d=>categoryOut(d));
-    }
-
-    function getCategories(){
-    fetch(`${API}/categories`)
-    .then(r=>r.json()).then(d=>categoryOut(d));
-    }
-
-    function createCategory(){
-    fetch(`${API}/categories`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:c_name.value
-    })
-    }).then(r=>r.json()).then(d=>categoryOut(d));
-    }
-
-    function updateCategory(){
-    fetch(`${API}/categories/${c_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:c_name.value
-    })
-    }).then(r=>r.json()).then(d=>categoryOut(d));
-    }
-
-    function deleteCategory(){
-    fetch(`${API}/categories/${c_id.value}`,{method:"DELETE"})
-    .then(()=>categoryOut("deleted"));
-    }
-
-    function categoryOut(d){
-    document.getElementById("categoryOut").innerText = JSON.stringify(d,null,2);
-    }
-
-    /* ================= ORDERS ================= */
-    function createOrder(){
-
-    const order = {
-    moment:new Date().toISOString(),
-    orderStatus:"WAITING_PAYMENT",
-    client:{id:Number(o_userId.value)},
-    items:[{
-    product:{id:Number(o_productId.value)},
-    quantity:Number(o_qty.value),
-    price:Number(o_price.value)
-    }]
-    };
-
-    fetch(`${API}/orders`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(order)
-    }).then(r=>r.json()).then(d=>orderOut(d));
-    }
-
-    function getOrder(){
-    fetch(`${API}/orders/${o_id.value}`)
-    .then(r=>r.json()).then(d=>orderOut(d));
-    }
-
-    function getOrders(){
-    fetch(`${API}/orders`)
-    .then(r=>r.json()).then(d=>orderOut(d));
-    }
-
-    function updateOrder(){
-    fetch(`${API}/orders/${o_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({orderStatus:"PAID"})
-    }).then(r=>r.json()).then(d=>orderOut(d));
-    }
-
-    function deleteOrder(){
-    fetch(`${API}/orders/${o_id.value}`,{method:"DELETE"})
-    .then(()=>orderOut("deleted"));
-    }
-
-    function orderOut(d){
-    document.getElementById("orderOut").innerText = JSON.stringify(d,null,2);
-    }
+    /* INIT */
+    renderProduto();
+    renderCategoria();
 
 </script>
 
