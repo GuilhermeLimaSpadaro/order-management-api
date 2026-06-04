@@ -2,385 +2,334 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>API Debug Tester</title>
+    <title>Painel API</title>
 
     <style>
         body {
           margin: 0;
           font-family: Arial;
           display: flex;
-          background: #0b1220;
-          color: white;
+          height: 100vh;
+          background: #f5f7f6;
         }
 
+        /* MENU */
         .sidebar {
-          width: 260px;
-          background: #111827;
-          height: 100vh;
+          width: 240px;
+          background: #0f3d2e;
+          color: white;
           padding: 20px;
+        }
+
+        .sidebar h2 {
+          margin-bottom: 15px;
         }
 
         .sidebar button {
           width: 100%;
-          margin-bottom: 10px;
           padding: 10px;
-          border: 0;
-          cursor: pointer;
-          background: #1f2937;
+          margin-bottom: 8px;
+          background: #146c43;
+          border: none;
           color: white;
+          cursor: pointer;
+          border-radius: 6px;
         }
 
         .sidebar button:hover {
-          background: #374151;
+          background: #1e8f5a;
         }
 
+        /* CONTEÚDO */
         .main {
           flex: 1;
           padding: 20px;
         }
 
         .card {
-          background: #111827;
-          padding: 15px;
-          margin-bottom: 15px;
-          border-radius: 8px;
-          border: 1px solid #374151;
+          background: white;
+          padding: 20px;
+          border-radius: 10px;
+          max-width: 750px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
 
-        input {
+        /* INPUTS */
+        input, select {
           width: 100%;
-          padding: 8px;
-          margin: 5px 0;
+          padding: 10px;
+          margin-bottom: 10px;
+          border-radius: 6px;
+          border: 1px solid #ccc;
         }
 
         button.action {
           width: 100%;
           padding: 10px;
-          margin-top: 5px;
-          border: 0;
-          cursor: pointer;
-          background: #2563eb;
+          background: #146c43;
           color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
         }
 
-        pre {
-          background: black;
-          padding: 10px;
-          overflow: auto;
-          color: #22c55e;
+        button.action:hover {
+          background: #1e8f5a;
         }
 
-        .status {
-          font-weight: bold;
-        }
+        .section { display: none; }
+        .active { display: block; }
+
+        label { display:block; margin-bottom:5px; }
     </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-    <h3>API DEBUG</h3>
+    <h2>PAINEL API</h2>
 
-    <button onclick="show('users')">Users</button>
-    <button onclick="show('products')">Products</button>
-    <button onclick="show('categories')">Categories</button>
-    <button onclick="show('orders')">Orders</button>
+    <button onclick="abrir('usuarios')">Usuários</button>
+    <button onclick="abrir('produtos')">Produtos</button>
+    <button onclick="abrir('categorias')">Categorias</button>
+    <button onclick="abrir('pedidos')">Pedidos</button>
 </div>
 
 <div class="main">
 
-    <!-- USERS -->
-    <div id="users" class="card">
-        <h3>USERS</h3>
+    <!-- USUÁRIOS -->
+    <div id="usuarios" class="section active">
+        <div class="card">
+            <h2>Usuários</h2>
 
-        <input id="u_id" placeholder="ID">
-        <input id="u_name" placeholder="Name">
-        <input id="u_email" placeholder="Email">
+            <select onchange="renderUsuarios()" id="acaoUsuarios">
+                <option value="criar">Criar</option>
+                <option value="buscarId">Buscar por ID</option>
+                <option value="buscarTodos">Buscar todos</option>
+                <option value="atualizar">Atualizar</option>
+                <option value="deletar">Deletar</option>
+            </select>
 
-        <button class="action" onclick="getUser()">GET BY ID</button>
-        <button class="action" onclick="getUsers()">GET ALL</button>
-        <button class="action" onclick="createUser()">POST</button>
-        <button class="action" onclick="updateUser()">PUT</button>
-        <button class="action" onclick="deleteUser()">DELETE</button>
-
-        <pre id="userOut"></pre>
+            <div id="formUsuarios"></div>
+        </div>
     </div>
 
-    <!-- PRODUCTS -->
-    <div id="products" class="card" style="display:none">
-        <h3>PRODUCTS</h3>
+    <!-- PRODUTOS -->
+    <div id="produtos" class="section">
+        <div class="card">
+            <h2>Produtos</h2>
 
-        <input id="p_id">
-        <input id="p_name">
-        <input id="p_price">
+            <select onchange="renderProdutos()" id="acaoProdutos">
+                <option value="criar">Criar</option>
+                <option value="buscarId">Buscar por ID</option>
+                <option value="buscarTodos">Buscar todos</option>
+                <option value="atualizar">Atualizar</option>
+                <option value="deletar">Deletar</option>
+            </select>
 
-        <button class="action" onclick="getProduct()">GET BY ID</button>
-        <button class="action" onclick="getProducts()">GET ALL</button>
-        <button class="action" onclick="createProduct()">POST</button>
-        <button class="action" onclick="updateProduct()">PUT</button>
-        <button class="action" onclick="deleteProduct()">DELETE</button>
-
-        <pre id="productOut"></pre>
+            <div id="formProdutos"></div>
+        </div>
     </div>
 
-    <!-- CATEGORIES -->
-    <div id="categories" class="card" style="display:none">
-        <h3>CATEGORIES</h3>
+    <!-- CATEGORIAS -->
+    <div id="categorias" class="section">
+        <div class="card">
+            <h2>Categorias</h2>
 
-        <input id="c_id">
-        <input id="c_name">
+            <select onchange="renderCategorias()" id="acaoCategorias">
+                <option value="criar">Criar</option>
+                <option value="buscarId">Buscar por ID</option>
+                <option value="buscarTodos">Buscar todos</option>
+                <option value="atualizar">Atualizar</option>
+                <option value="deletar">Deletar</option>
+            </select>
 
-        <button class="action" onclick="getCategory()">GET BY ID</button>
-        <button class="action" onclick="getCategories()">GET ALL</button>
-        <button class="action" onclick="createCategory()">POST</button>
-        <button class="action" onclick="updateCategory()">PUT</button>
-        <button class="action" onclick="deleteCategory()">DELETE</button>
-
-        <pre id="categoryOut"></pre>
+            <div id="formCategorias"></div>
+        </div>
     </div>
 
-    <!-- ORDERS -->
-    <div id="orders" class="card" style="display:none">
-        <h3>ORDERS</h3>
+    <!-- PEDIDOS -->
+    <div id="pedidos" class="section">
+        <div class="card">
+            <h2>Pedidos</h2>
 
-        <input id="o_id">
-        <input id="o_userId">
-        <input id="o_productId">
-        <input id="o_qty">
-        <input id="o_price">
+            <select onchange="renderPedidos()" id="acaoPedidos">
+                <option value="criar">Criar</option>
+                <option value="buscarId">Buscar por ID</option>
+                <option value="buscarTodos">Buscar todos</option>
+                <option value="atualizar">Atualizar</option>
+                <option value="deletar">Deletar</option>
+            </select>
 
-        <button class="action" onclick="createOrder()">POST</button>
-        <button class="action" onclick="getOrder()">GET BY ID</button>
-        <button class="action" onclick="getOrders()">GET ALL</button>
-        <button class="action" onclick="updateOrder()">PUT</button>
-        <button class="action" onclick="deleteOrder()">DELETE</button>
-
-        <pre id="orderOut"></pre>
+            <div id="formPedidos"></div>
+        </div>
     </div>
 
 </div>
 
 <script>
 
-    const API = "https://order-management-production-20f1.up.railway.app";
+    const API = "http://localhost:8080";
 
-    function show(id){
-      document.querySelectorAll('.card').forEach(c => c.style.display='none');
-      document.getElementById(id).style.display='block';
+    /* MENU */
+    function abrir(sec) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(sec).classList.add('active');
     }
 
-    /* ================== FETCH DEBUG ================== */
-    async function request(url, options){
-      try {
-        const res = await fetch(url, options);
-        const text = await res.text();
+    /* ================= USUÁRIOS ================= */
 
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch {
-          data = text;
-        }
+    function renderUsuarios() {
+      const a = acaoUsuarios.value;
+      const d = formUsuarios;
 
-        return {
-          status: res.status,
-          ok: res.ok,
-          data
-        };
+      if (a === "buscarId") {
+        d.innerHTML = `<input id="u_id" placeholder="ID"><button class="action">Buscar</button>`;
+      }
 
-      } catch (err) {
-        return {
-          status: 0,
-          ok: false,
-          data: "NETWORK ERROR: " + err.message
-        };
+      if (a === "buscarTodos") {
+        d.innerHTML = `<button class="action">Buscar todos</button>`;
+      }
+
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="u_nome" placeholder="Nome">
+          <input id="u_email" placeholder="Email">
+          <input id="u_phone" placeholder="Telefone">
+          <input id="u_pass" placeholder="Senha">
+          <button class="action">Criar</button>
+        `;
+      }
+
+      if (a === "atualizar") {
+        d.innerHTML = `
+          <input id="u_id" placeholder="ID">
+          <input id="u_nome" placeholder="Nome">
+          <input id="u_email" placeholder="Email">
+          <input id="u_phone" placeholder="Telefone">
+          <input id="u_pass" placeholder="Senha">
+          <button class="action">Atualizar</button>
+        `;
+      }
+
+      if (a === "deletar") {
+        d.innerHTML = `<input id="u_id" placeholder="ID"><button class="action">Deletar</button>`;
       }
     }
 
-    /* ================= USERS ================= */
-    async function getUser(){
-    const r = await request(`${API}/users/${u_id.value}`);
-    userOut(r);
+    /* ================= PRODUTOS ================= */
+
+    function renderProdutos() {
+      const a = acaoProdutos.value;
+      const d = formProdutos;
+
+      if (a === "buscarId") {
+        d.innerHTML = `<input id="p_id" placeholder="ID"><button class="action">Buscar</button>`;
+      }
+
+      if (a === "buscarTodos") {
+        d.innerHTML = `<button class="action">Buscar todos</button>`;
+      }
+
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="p_nome" placeholder="Nome">
+          <input id="p_desc" placeholder="Descrição">
+          <input id="p_preco" placeholder="Preço">
+          <button class="action">Criar</button>
+        `;
+      }
+
+      if (a === "atualizar") {
+        d.innerHTML = `
+          <input id="p_id" placeholder="ID">
+          <input id="p_nome" placeholder="Nome">
+          <input id="p_desc" placeholder="Descrição">
+          <input id="p_preco" placeholder="Preço">
+          <button class="action">Atualizar</button>
+        `;
+      }
+
+      if (a === "deletar") {
+        d.innerHTML = `<input id="p_id" placeholder="ID"><button class="action">Deletar</button>`;
+      }
     }
 
-    async function getUsers(){
-    const r = await request(`${API}/users`);
-    userOut(r);
+    /* ================= CATEGORIAS ================= */
+
+    function renderCategorias() {
+      const a = acaoCategorias.value;
+      const d = formCategorias;
+
+      if (a === "buscarId") {
+        d.innerHTML = `<input id="c_id" placeholder="ID"><button class="action">Buscar</button>`;
+      }
+
+      if (a === "buscarTodos") {
+        d.innerHTML = `<button class="action">Buscar todos</button>`;
+      }
+
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="c_nome" placeholder="Nome categoria">
+          <button class="action">Criar</button>
+        `;
+      }
+
+      if (a === "atualizar") {
+        d.innerHTML = `
+          <input id="c_id" placeholder="ID">
+          <input id="c_nome" placeholder="Nome categoria">
+          <button class="action">Atualizar</button>
+        `;
+      }
+
+      if (a === "deletar") {
+        d.innerHTML = `<input id="c_id" placeholder="ID"><button class="action">Deletar</button>`;
+      }
     }
 
-    async function createUser(){
-    const r = await request(`${API}/users`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:u_name.value,
-    email:u_email.value
-    })
-    });
-    userOut(r);
+    /* ================= PEDIDOS ================= */
+
+    function renderPedidos() {
+      const a = acaoPedidos.value;
+      const d = formPedidos;
+
+      if (a === "buscarId") {
+        d.innerHTML = `<input id="o_id" placeholder="ID"><button class="action">Buscar</button>`;
+      }
+
+      if (a === "buscarTodos") {
+        d.innerHTML = `<button class="action">Buscar todos</button>`;
+      }
+
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="o_cliente" placeholder="ID cliente">
+          <input id="o_status" placeholder="Status">
+          <input id="o_data" placeholder="Data (yyyy-MM-ddTHH:mm:ss)">
+          <button class="action">Criar</button>
+        `;
+      }
+
+      if (a === "atualizar") {
+        d.innerHTML = `
+          <input id="o_id" placeholder="ID">
+          <input id="o_status" placeholder="Status">
+          <button class="action">Atualizar</button>
+        `;
+      }
+
+      if (a === "deletar") {
+        d.innerHTML = `<input id="o_id" placeholder="ID"><button class="action">Deletar</button>`;
+      }
     }
 
-    async function updateUser(){
-    const r = await request(`${API}/users/${u_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:u_name.value,
-    email:u_email.value
-    })
-    });
-    userOut(r);
-    }
-
-    async function deleteUser(){
-    const r = await request(`${API}/users/${u_id.value}`,{method:"DELETE"});
-    userOut(r);
-    }
-
-    function userOut(r){
-    document.getElementById("userOut").innerText =
-    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
-    JSON.stringify(r.data,null,2);
-    }
-
-    /* ================= PRODUCTS ================= */
-    async function getProduct(){
-    const r = await request(`${API}/products/${p_id.value}`);
-    productOut(r);
-    }
-
-    async function getProducts(){
-    const r = await request(`${API}/products`);
-    productOut(r);
-    }
-
-    async function createProduct(){
-    const r = await request(`${API}/products`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:p_name.value,
-    price:Number(p_price.value)
-    })
-    });
-    productOut(r);
-    }
-
-    async function updateProduct(){
-    const r = await request(`${API}/products/${p_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-    name:p_name.value,
-    price:Number(p_price.value)
-    })
-    });
-    productOut(r);
-    }
-
-    async function deleteProduct(){
-    const r = await request(`${API}/products/${p_id.value}`,{method:"DELETE"});
-    productOut(r);
-    }
-
-    function productOut(r){
-    document.getElementById("productOut").innerText =
-    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
-    JSON.stringify(r.data,null,2);
-    }
-
-    /* ================= CATEGORIES ================= */
-    async function getCategory(){
-    const r = await request(`${API}/categories/${c_id.value}`);
-    categoryOut(r);
-    }
-
-    async function getCategories(){
-    const r = await request(`${API}/categories`);
-    categoryOut(r);
-    }
-
-    async function createCategory(){
-    const r = await request(`${API}/categories`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name:c_name.value})
-    });
-    categoryOut(r);
-    }
-
-    async function updateCategory(){
-    const r = await request(`${API}/categories/${c_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({name:c_name.value})
-    });
-    categoryOut(r);
-    }
-
-    async function deleteCategory(){
-    const r = await request(`${API}/categories/${c_id.value}`,{method:"DELETE"});
-    categoryOut(r);
-    }
-
-    function categoryOut(r){
-    document.getElementById("categoryOut").innerText =
-    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
-    JSON.stringify(r.data,null,2);
-    }
-
-    /* ================= ORDERS ================= */
-    async function createOrder(){
-
-    const order = {
-    moment:new Date().toISOString(),
-    orderStatus:"WAITING_PAYMENT",
-    client:{id:Number(o_userId.value)},
-    items:[{
-    product:{id:Number(o_productId.value)},
-    quantity:Number(o_qty.value),
-    price:Number(o_price.value)
-    }]
-    };
-
-    const r = await request(`${API}/orders`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(order)
-    });
-
-    orderOut(r);
-    }
-
-    async function getOrder(){
-    const r = await request(`${API}/orders/${o_id.value}`);
-    orderOut(r);
-    }
-
-    async function getOrders(){
-    const r = await request(`${API}/orders`);
-    orderOut(r);
-    }
-
-    async function updateOrder(){
-    const r = await request(`${API}/orders/${o_id.value}`,{
-    method:"PUT",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({orderStatus:"PAID"})
-    });
-    orderOut(r);
-    }
-
-    async function deleteOrder(){
-    const r = await request(`${API}/orders/${o_id.value}`,{method:"DELETE"});
-    orderOut(r);
-    }
-
-    function orderOut(r){
-    document.getElementById("orderOut").innerText =
-    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
-    JSON.stringify(r.data,null,2);
-    }
+    /* INIT */
+    renderUsuarios();
+    renderProdutos();
+    renderCategorias();
+    renderPedidos();
 
 </script>
 
