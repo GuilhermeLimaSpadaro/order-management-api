@@ -1,8 +1,8 @@
 package com.portfolio.ordermanagerapi.services;
 
+import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import com.portfolio.ordermanagerapi.model.Category;
 import com.portfolio.ordermanagerapi.repositories.CategoryRepository;
-import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class CategoryService {
         return categoryRepository.save(entity);
     }
 
-    public void updateEntity(Category entity, Category category){
+    public void updateEntity(Category entity, Category category) {
         entity.setName(category.getName());
     }
 

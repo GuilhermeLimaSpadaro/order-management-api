@@ -1,9 +1,8 @@
 package com.portfolio.ordermanagerapi.services;
 
-import com.portfolio.ordermanagerapi.model.Product;
+import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import com.portfolio.ordermanagerapi.model.Product;
 import com.portfolio.ordermanagerapi.repositories.ProductRepository;
-import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
