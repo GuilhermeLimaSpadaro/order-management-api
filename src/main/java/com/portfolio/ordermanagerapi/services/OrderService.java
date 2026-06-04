@@ -3,6 +3,7 @@ package com.portfolio.ordermanagerapi.services;
 import com.portfolio.ordermanagerapi.model.Order;
 import com.portfolio.ordermanagerapi.repositories.OrderRepository;
 import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,14 +22,19 @@ public class OrderService {
     }
 
     public void delete(Long id) {
+
         Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
         orderRepository.delete(order);
     }
 
     public Order update(Long id, Order order) {
-        Order entity = orderRepository.getReferenceById(id);
-        updateEntity(entity, order);
-        return orderRepository.save(entity);
+        try {
+            Order entity = orderRepository.getReferenceById(id);
+            updateEntity(entity, order);
+            return orderRepository.save(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(e.getMessage());
+        }
     }
 
     public void updateEntity(Order entity, Order obj) {

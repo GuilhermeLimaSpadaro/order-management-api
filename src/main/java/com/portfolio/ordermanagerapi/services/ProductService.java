@@ -1,8 +1,10 @@
 package com.portfolio.ordermanagerapi.services;
 
 import com.portfolio.ordermanagerapi.model.Product;
+import com.portfolio.ordermanagerapi.model.Product;
 import com.portfolio.ordermanagerapi.repositories.ProductRepository;
 import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,9 +28,13 @@ public class ProductService {
     }
 
     public Product update(Long id, Product product) {
-        Product entity = productRepository.getReferenceById(id);
-        updateEntity(entity, product);
-        return productRepository.save(entity);
+        try {
+            Product entity = productRepository.getReferenceById(id);
+            updateEntity(entity, product);
+            return productRepository.save(entity);
+        } catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(id);
+        }
     }
 
     public void updateEntity(Product entity, Product product) {

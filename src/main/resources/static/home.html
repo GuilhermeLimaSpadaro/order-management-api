@@ -2,179 +2,350 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Order App</title>
+  <title>Order System Admin</title>
 
   <style>
     body {
       margin: 0;
       font-family: Arial;
       display: flex;
-      background: #f4f6f8;
+      background: #0f172a;
+      color: white;
     }
 
-    /* LEFT */
-    .left {
-      width: 65%;
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: #111827;
+      height: 100vh;
       padding: 20px;
     }
 
-    .products {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 0;
+      cursor: pointer;
+      background: #1f2937;
+      color: white;
+      text-align: left;
+    }
+
+    .sidebar button:hover {
+      background: #374151;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 20px;
     }
 
     .card {
-      background: white;
-      padding: 10px;
+      background: #1e293b;
+      padding: 15px;
       border-radius: 8px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
     }
 
-    .card:hover {
-      transform: scale(1.02);
+    input {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
     }
 
-    /* RIGHT CART */
-    .cart {
-      width: 35%;
-      background: #111827;
-      color: white;
-      padding: 20px;
-      height: 100vh;
-    }
-
-    .item {
-      background: #1f2937;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-    }
-
-    button {
+    button.action {
       width: 100%;
       padding: 10px;
-      border: none;
-      margin-top: 10px;
+      margin-top: 5px;
+      border: 0;
+      background: #2563eb;
+      color: white;
       cursor: pointer;
+      border-radius: 5px;
     }
 
-    .buy {
-      background: #22c55e;
+    pre {
+      background: black;
+      padding: 10px;
+      overflow: auto;
     }
-
-    .clear {
-      background: #ef4444;
-    }
+    .hidden { display:none; }
   </style>
 </head>
 
 <body>
 
-<div class="left">
-  <h2>Produtos</h2>
-  <div id="products" class="products"></div>
+<div class="sidebar">
+  <h2>ADMIN PANEL</h2>
+
+  <button onclick="show('users')">Users</button>
+  <button onclick="show('products')">Products</button>
+  <button onclick="show('orders')">Orders</button>
+  <button onclick="show('categories')">Categories</button>
 </div>
 
-<div class="cart">
-  <h2>Carrinho</h2>
-  <div id="cart"></div>
+<div class="main">
 
-  <input id="userId" placeholder="User ID">
+  <!-- USERS -->
+  <div id="users" class="card">
+    <h3>Users</h3>
 
-  <button class="buy" onclick="checkout()">Finalizar Pedido</button>
-  <button class="clear" onclick="clearCart()">Limpar</button>
+    <input id="u_id" placeholder="ID">
+    <input id="u_name" placeholder="Name">
+    <input id="u_email" placeholder="Email">
 
-  <pre id="out"></pre>
+    <button class="action" onclick="getUser()">GET by ID</button>
+    <button class="action" onclick="getUsers()">GET ALL</button>
+    <button class="action" onclick="createUser()">INSERT</button>
+    <button class="action" onclick="updateUser()">UPDATE</button>
+    <button class="action" onclick="deleteUser()">DELETE</button>
+
+    <pre id="userOut"></pre>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div id="products" class="card hidden">
+    <h3>Products</h3>
+
+    <input id="p_id">
+    <input id="p_name">
+    <input id="p_price">
+
+    <button class="action" onclick="getProduct()">GET by ID</button>
+    <button class="action" onclick="getProducts()">GET ALL</button>
+    <button class="action" onclick="createProduct()">INSERT</button>
+    <button class="action" onclick="updateProduct()">UPDATE</button>
+    <button class="action" onclick="deleteProduct()">DELETE</button>
+
+    <pre id="productOut"></pre>
+  </div>
+
+  <!-- ORDERS -->
+  <div id="orders" class="card hidden">
+    <h3>Orders</h3>
+
+    <input id="o_id">
+    <input id="o_userId">
+    <input id="o_productId">
+    <input id="o_qty">
+    <input id="o_price">
+
+    <button class="action" onclick="getOrder()">GET by ID</button>
+    <button class="action" onclick="getOrders()">GET ALL</button>
+    <button class="action" onclick="createOrder()">INSERT</button>
+    <button class="action" onclick="updateOrder()">UPDATE</button>
+    <button class="action" onclick="deleteOrder()">DELETE</button>
+
+    <pre id="orderOut"></pre>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div id="categories" class="card hidden">
+    <h3>Categories</h3>
+
+    <input id="c_id">
+    <input id="c_name">
+
+    <button class="action" onclick="getCategory()">GET by ID</button>
+    <button class="action" onclick="getCategories()">GET ALL</button>
+    <button class="action" onclick="createCategory()">INSERT</button>
+    <button class="action" onclick="updateCategory()">UPDATE</button>
+    <button class="action" onclick="deleteCategory()">DELETE</button>
+
+    <pre id="categoryOut"></pre>
+  </div>
+
 </div>
 
 <script>
 
   const API = "https://order-management-production-20f1.up.railway.app";
 
-  let cart = [];
-
-  /* CARREGA PRODUTOS */
-  function loadProducts() {
-    fetch(`${API}/products`)
-      .then(r => r.json())
-      .then(data => {
-        const container = document.getElementById("products");
-        container.innerHTML = "";
-
-        data.forEach(p => {
-          const div = document.createElement("div");
-          div.className = "card";
-          div.innerHTML = `
-            <b>${p.name}</b><br>
-            R$ ${p.price}
-          `;
-
-          div.onclick = () => addToCart(p);
-
-          container.appendChild(div);
-        });
-      });
+  function show(id){
+    document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
   }
 
-  /* ADD CARRINHO */
-  function addToCart(product) {
-    cart.push(product);
-    renderCart();
+  /* ================= USERS ================= */
+  function getUser(){
+  fetch(`${API}/users/${u_id.value}`)
+  .then(r=>r.json()).then(d=>userOut(d));
   }
 
-  /* RENDER CART */
-  function renderCart() {
-    const container = document.getElementById("cart");
-    container.innerHTML = "";
-
-    cart.forEach((p, i) => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `
-        ${p.name} - R$ ${p.price}
-      `;
-      container.appendChild(div);
-    });
+  function getUsers(){
+  fetch(`${API}/users`)
+  .then(r=>r.json()).then(d=>userOut(d));
   }
 
-  /* LIMPAR */
-  function clearCart() {
-    cart = [];
-    renderCart();
+  function createUser(){
+  fetch(`${API}/users`,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+  name:u_name.value,
+  email:u_email.value
+  })
+  }).then(r=>r.json()).then(d=>userOut(d));
   }
 
-  /* CHECKOUT REAL */
-  function checkout() {
-
-    if (cart.length === 0) return;
-
-    const order = {
-      moment: new Date().toISOString(),
-      orderStatus: "WAITING_PAYMENT",
-      client: { id: Number(userId.value) },
-      items: cart.map(p => ({
-        product: { id: p.id },
-        quantity: 1,
-        price: p.price
-      }))
-    };
-
-    fetch(`${API}/orders`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(order)
-    })
-    .then(r => r.json())
-    .then(data => {
-      out.innerText = JSON.stringify(data, null, 2);
-      clearCart();
-    });
+  function updateUser(){
+  fetch(`${API}/users/${u_id.value}`,{
+  method:"PUT",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+  name:u_name.value,
+  email:u_email.value
+  })
+  }).then(r=>r.json()).then(d=>userOut(d));
   }
 
-  /* INIT */
-  loadProducts();
+  function deleteUser(){
+  fetch(`${API}/users/${u_id.value}`,{method:"DELETE"})
+  .then(()=>userOut("deleted"));
+  }
+
+  function userOut(d){
+  document.getElementById("userOut").innerText = JSON.stringify(d,null,2);
+  }
+
+  /* ================= PRODUCTS ================= */
+  function getProduct(){
+  fetch(`${API}/products/${p_id.value}`)
+  .then(r=>r.json()).then(d=>productOut(d));
+  }
+
+  function getProducts(){
+  fetch(`${API}/products`)
+  .then(r=>r.json()).then(d=>productOut(d));
+  }
+
+  function createProduct(){
+  fetch(`${API}/products`,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+  name:p_name.value,
+  price:Number(p_price.value)
+  })
+  }).then(r=>r.json()).then(d=>productOut(d));
+  }
+
+  function updateProduct(){
+  fetch(`${API}/products/${p_id.value}`,{
+  method:"PUT",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+  name:p_name.value,
+  price:Number(p_price.value)
+  })
+  }).then(r=>r.json()).then(d=>productOut(d));
+  }
+
+  function deleteProduct(){
+  fetch(`${API}/products/${p_id.value}`,{method:"DELETE"})
+  .then(()=>productOut("deleted"));
+  }
+
+  function productOut(d){
+  document.getElementById("productOut").innerText = JSON.stringify(d,null,2);
+  }
+
+  /* ================= ORDERS ================= */
+  function createOrder(){
+
+  const order = {
+  moment:new Date().toISOString(),
+  orderStatus:"WAITING_PAYMENT",
+  client:{id:Number(o_userId.value)},
+  items:[{
+  product:{id:Number(o_productId.value)},
+  quantity:Number(o_qty.value),
+  price:Number(o_price.value)
+  }]
+  };
+
+  fetch(`${API}/orders`,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(order)
+  }).then(r=>r.json()).then(d=>orderOut(d));
+  }
+
+  function getOrder(){
+  fetch(`${API}/orders/${o_id.value}`)
+  .then(r=>r.json()).then(d=>orderOut(d));
+  }
+
+  function getOrders(){
+  fetch(`${API}/orders`)
+  .then(r=>r.json()).then(d=>orderOut(d));
+  }
+
+  function updateOrder(){
+  fetch(`${API}/orders/${o_id.value}`,{
+  method:"PUT",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({orderStatus:"PAID"})
+  }).then(r=>r.json()).then(d=>orderOut(d));
+  }
+
+  function deleteOrder(){
+  fetch(`${API}/orders/${o_id.value}`,{method:"DELETE"})
+  .then(()=>orderOut("deleted"));
+  }
+
+  function orderOut(d){
+  document.getElementById("orderOut").innerText = JSON.stringify(d,null,2);
+  }
+
+  /* ================= CATEGORIES ================= */
+  function getCategory(){
+  fetch(`${API}/categories/${c_id.value}`)
+  .then(r=>r.json()).then(d=>categoryOut(d));
+  }
+
+  function getCategories(){
+  fetch(`${API}/categories`)
+  .then(r=>r.json()).then(d=>categoryOut(d));
+  }
+
+  function createCategory(){
+  fetch(`${API}/categories`,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+  name:c_name.value
+  })
+  }).then(r=>r.json()).then(d=>categoryOut(d));
+  }
+
+  function updateCategory(){
+  fetch(`${API}/categories/${c_id.value}`,{
+  method:"PUT",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+  name:c_name.value
+  })
+  }).then(r=>r.json()).then(d=>categoryOut(d));
+  }
+
+  function deleteCategory(){
+  fetch(`${API}/categories/${c_id.value}`,{method:"DELETE"})
+  .then(()=>categoryOut("deleted"));
+  }
+
+  function categoryOut(d){
+  document.getElementById("categoryOut").innerText = JSON.stringify(d,null,2);
+  }
 
 </script>
 
