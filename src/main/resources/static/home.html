@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel de Teste da API</title>
+    <title>Painel API</title>
 
     <style>
         * {
@@ -18,7 +18,6 @@
           background: #f4f6f9;
         }
 
-        /* MENU */
         .sidebar {
           width: 220px;
           background: #111827;
@@ -45,7 +44,6 @@
           background: #374151;
         }
 
-        /* CONTEÚDO */
         .main {
           flex: 1;
           padding: 20px;
@@ -55,7 +53,7 @@
           background: white;
           padding: 20px;
           border-radius: 10px;
-          max-width: 650px;
+          max-width: 700px;
           box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
@@ -80,7 +78,7 @@
         .section { display: none; }
         .active { display: block; }
 
-        label { display: block; margin-bottom: 5px; }
+        label { display:block; margin-bottom:5px; }
     </style>
 </head>
 
@@ -91,6 +89,8 @@
 
     <button onclick="abrir('produto')">Produto</button>
     <button onclick="abrir('categoria')">Categoria</button>
+    <button onclick="abrir('usuario')">Usuário</button>
+    <button onclick="abrir('pedido')">Pedido</button>
 </div>
 
 <div class="main">
@@ -101,8 +101,8 @@
 
             <h2>Produto</h2>
 
-            <select id="acaoProduto" onchange="renderProduto()">
-                <option value="buscar">Buscar por ID</option>
+            <select onchange="renderProduto()" id="acaoProduto">
+                <option value="buscar">Buscar</option>
                 <option value="criar">Criar</option>
                 <option value="deletar">Deletar</option>
             </select>
@@ -118,13 +118,47 @@
 
             <h2>Categoria</h2>
 
-            <select id="acaoCategoria" onchange="renderCategoria()">
-                <option value="buscar">Buscar por ID</option>
+            <select onchange="renderCategoria()" id="acaoCategoria">
+                <option value="buscar">Buscar</option>
                 <option value="criar">Criar</option>
                 <option value="deletar">Deletar</option>
             </select>
 
             <div id="formCategoria"></div>
+
+        </div>
+    </div>
+
+    <!-- USUÁRIO -->
+    <div id="usuario" class="section">
+        <div class="card">
+
+            <h2>Usuário</h2>
+
+            <select onchange="renderUsuario()" id="acaoUsuario">
+                <option value="buscar">Buscar</option>
+                <option value="criar">Criar</option>
+                <option value="deletar">Deletar</option>
+            </select>
+
+            <div id="formUsuario"></div>
+
+        </div>
+    </div>
+
+    <!-- PEDIDO -->
+    <div id="pedido" class="section">
+        <div class="card">
+
+            <h2>Pedido</h2>
+
+            <select onchange="renderPedido()" id="acaoPedido">
+                <option value="buscar">Buscar</option>
+                <option value="criar">Criar</option>
+                <option value="deletar">Deletar</option>
+            </select>
+
+            <div id="formPedido"></div>
 
         </div>
     </div>
@@ -144,157 +178,152 @@
     /* ================= PRODUTO ================= */
 
     function renderProduto() {
-      const acao = document.getElementById("acaoProduto").value;
-      const div = document.getElementById("formProduto");
+      const a = document.getElementById("acaoProduto").value;
+      const d = document.getElementById("formProduto");
 
-      if (acao === "buscar") {
-        div.innerHTML = `
-          <input id="idProduto" placeholder="ID do produto">
-          <button class="action" onclick="buscarProduto()">Buscar</button>
+      if (a === "buscar") {
+        d.innerHTML = `<input id="idProduto" placeholder="ID"><button class="action" onclick="buscarProduto()">Buscar</button>`;
+      }
+
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="p_nome" placeholder="Nome">
+          <input id="p_desc" placeholder="Descrição">
+          <input id="p_preco" placeholder="Preço">
+          <button class="action" onclick="criarProduto()">Criar</button>
         `;
       }
 
-      if (acao === "criar") {
-        div.innerHTML = `
-          <input id="nomeProduto" placeholder="Nome">
-          <input id="descricaoProduto" placeholder="Descrição">
-          <input id="precoProduto" placeholder="Preço">
-
-          <h4>Categorias</h4>
-          <div id="categoriasBox"></div>
-
-          <button class="action" onclick="criarProduto()">Criar Produto</button>
-        `;
-
-        carregarCategorias();
-      }
-
-      if (acao === "deletar") {
-        div.innerHTML = `
-          <input id="idProdutoDel" placeholder="ID do produto">
-          <button class="action" onclick="deletarProduto()">Deletar</button>
-        `;
+      if (a === "deletar") {
+        d.innerHTML = `<input id="idProdutoDel" placeholder="ID"><button class="action" onclick="deletarProduto()">Deletar</button>`;
       }
     }
 
     /* ================= CATEGORIA ================= */
 
     function renderCategoria() {
-      const acao = document.getElementById("acaoCategoria").value;
-      const div = document.getElementById("formCategoria");
+      const a = document.getElementById("acaoCategoria").value;
+      const d = document.getElementById("formCategoria");
 
-      if (acao === "buscar") {
-        div.innerHTML = `
-          <input id="idCategoria" placeholder="ID da categoria">
-          <button class="action" onclick="buscarCategoria()">Buscar</button>
-        `;
+      if (a === "buscar") {
+        d.innerHTML = `<input id="idCategoria" placeholder="ID"><button class="action" onclick="buscarCategoria()">Buscar</button>`;
       }
 
-      if (acao === "criar") {
-        div.innerHTML = `
-          <input id="nomeCategoria" placeholder="Nome da categoria">
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="c_nome" placeholder="Nome categoria">
           <button class="action" onclick="criarCategoria()">Criar</button>
         `;
       }
 
-      if (acao === "deletar") {
-        div.innerHTML = `
-          <input id="idCategoriaDel" placeholder="ID da categoria">
-          <button class="action" onclick="deletarCategoria()">Deletar</button>
-        `;
+      if (a === "deletar") {
+        d.innerHTML = `<input id="idCategoriaDel" placeholder="ID"><button class="action" onclick="deletarCategoria()">Deletar</button>`;
       }
     }
 
-    /* ================= CATEGORIAS MOCK ================= */
+    /* ================= USUÁRIO ================= */
 
-    const categoriasMock = [
-      { id: 1, nome: "Comida" },
-      { id: 2, nome: "Bebidas" },
-      { id: 3, nome: "Fast Food" }
-    ];
+    function renderUsuario() {
+      const a = document.getElementById("acaoUsuario").value;
+      const d = document.getElementById("formUsuario");
 
-    function carregarCategorias() {
-      const box = document.getElementById("categoriasBox");
-      box.innerHTML = "";
+      if (a === "buscar") {
+        d.innerHTML = `<input id="idUsuario" placeholder="ID"><button class="action" onclick="buscarUsuario()">Buscar</button>`;
+      }
 
-      categoriasMock.forEach(c => {
-        box.innerHTML += `
-          <label>
-            <input type="checkbox" value="${c.id}">
-            ${c.nome}
-          </label>
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="u_nome" placeholder="Nome">
+          <input id="u_email" placeholder="Email">
+          <input id="u_phone" placeholder="Telefone">
+          <input id="u_pass" placeholder="Senha">
+          <button class="action" onclick="criarUsuario()">Criar</button>
         `;
-      });
+      }
+
+      if (a === "deletar") {
+        d.innerHTML = `<input id="idUsuarioDel" placeholder="ID"><button class="action" onclick="deletarUsuario()">Deletar</button>`;
+      }
     }
 
-    /* ================= PRODUTO API ================= */
+    /* ================= PEDIDO ================= */
 
-    function criarProduto() {
+    function renderPedido() {
+      const a = document.getElementById("acaoPedido").value;
+      const d = document.getElementById("formPedido");
 
-      const nome = document.getElementById("nomeProduto").value;
-      const descricao = document.getElementById("descricaoProduto").value;
-      const preco = document.getElementById("precoProduto").value;
+      if (a === "buscar") {
+        d.innerHTML = `<input id="idPedido" placeholder="ID"><button class="action" onclick="buscarPedido()">Buscar</button>`;
+      }
 
-      const categorias = Array.from(
-        document.querySelectorAll("#categoriasBox input:checked")
-      ).map(c => ({ id: Number(c.value) }));
+      if (a === "criar") {
+        d.innerHTML = `
+          <input id="p_client" placeholder="ID do usuário (cliente)">
+          <input id="p_status" placeholder="Status (0,1,2...)">
+          <input id="p_moment" placeholder="Data (2026-06-04T20:00:00)">
+          <button class="action" onclick="criarPedido()">Criar</button>
+        `;
+      }
 
-      fetch(API + "/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: nome,
-          description: descricao,
-          price: Number(preco),
-          categories: categorias
-        })
-      })
-      .then(r => r.json())
-      .then(() => alert("Produto criado"));
+      if (a === "deletar") {
+        d.innerHTML = `<input id="idPedidoDel" placeholder="ID"><button class="action" onclick="deletarPedido()">Deletar</button>`;
+      }
     }
 
-    function buscarProduto() {
-      const id = document.getElementById("idProduto").value;
-      fetch(API + "/products/" + id)
-      .then(r => r.json())
-      .then(d => console.log(d));
+    /* ================= API ================= */
+
+    // PRODUTO
+    function criarProduto(){
+      fetch(API+"/products",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        name: p_nome.value,
+        description: p_desc.value,
+        price: Number(p_preco.value)
+      })})
     }
 
-    function deletarProduto() {
-      const id = document.getElementById("idProdutoDel").value;
-      fetch(API + "/products/" + id, { method: "DELETE" })
-      .then(() => alert("Deletado"));
+    function buscarProduto(){ fetch(API+"/products/"+idProduto.value).then(r=>r.json()).then(console.log) }
+    function deletarProduto(){ fetch(API+"/products/"+idProdutoDel.value,{method:"DELETE"}) }
+
+    // CATEGORIA
+    function criarCategoria(){
+      fetch(API+"/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        name: c_nome.value
+      })})
     }
 
-    /* ================= CATEGORIA API ================= */
+    function buscarCategoria(){ fetch(API+"/categories/"+idCategoria.value).then(r=>r.json()).then(console.log) }
+    function deletarCategoria(){ fetch(API+"/categories/"+idCategoriaDel.value,{method:"DELETE"}) }
 
-    function criarCategoria() {
-      const nome = document.getElementById("nomeCategoria").value;
-
-      fetch(API + "/categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: nome })
-      })
-      .then(() => alert("Categoria criada"));
+    // USUÁRIO
+    function criarUsuario(){
+      fetch(API+"/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        name:u_nome.value,
+        email:u_email.value,
+        phone:u_phone.value,
+        password:u_pass.value
+      })})
     }
 
-    function buscarCategoria() {
-      const id = document.getElementById("idCategoria").value;
-      fetch(API + "/categories/" + id)
-      .then(r => r.json())
-      .then(d => console.log(d));
+    function buscarUsuario(){ fetch(API+"/users/"+idUsuario.value).then(r=>r.json()).then(console.log) }
+    function deletarUsuario(){ fetch(API+"/users/"+idUsuarioDel.value,{method:"DELETE"}) }
+
+    // PEDIDO
+    function criarPedido(){
+      fetch(API+"/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        client:{id:Number(p_client.value)},
+        orderStatus:Number(p_status.value),
+        moment:p_moment.value
+      })})
     }
 
-    function deletarCategoria() {
-      const id = document.getElementById("idCategoriaDel").value;
-      fetch(API + "/categories/" + id, { method: "DELETE" })
-      .then(() => alert("Deletado"));
-    }
+    function buscarPedido(){ fetch(API+"/orders/"+idPedido.value).then(r=>r.json()).then(console.log) }
+    function deletarPedido(){ fetch(API+"/orders/"+idPedidoDel.value,{method:"DELETE"}) }
 
     /* INIT */
     renderProduto();
     renderCategoria();
+    renderUsuario();
+    renderPedido();
 
 </script>
 
