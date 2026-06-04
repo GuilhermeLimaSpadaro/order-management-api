@@ -16,13 +16,13 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category insert(Category Category) {
-        return categoryRepository.save(Category);
+    public Category insert(Category category) {
+        return categoryRepository.save(category);
     }
 
     public void delete(Long id) {
-        Category Category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
-        categoryRepository.delete(Category);
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        categoryRepository.delete(category);
     }
 
     public Category update(Long id, Category category) {

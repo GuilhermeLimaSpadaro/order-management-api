@@ -1,6 +1,7 @@
 package com.portfolio.ordermanagerapi.controllers;
 
 import com.portfolio.ordermanagerapi.model.Product;
+import com.portfolio.ordermanagerapi.model.User;
 import com.portfolio.ordermanagerapi.services.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,11 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
+        return ResponseEntity.ok().body(productService.update(id, product));
     }
 
     @GetMapping("/{id}")
