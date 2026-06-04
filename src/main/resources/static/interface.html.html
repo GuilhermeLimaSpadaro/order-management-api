@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Manager Store</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#667eea,#764ba2);
+min-height:100vh;
+color:#333;
+}
+header{
+padding:30px;
+text-align:center;
+color:white;
+}
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+.panel{
+background:white;
+border-radius:16px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+h1,h2{margin-bottom:15px}
+select,input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:20px;
+}
+.card{
+background:white;
+border-radius:16px;
+padding:20px;
+box-shadow:0 5px 15px rgba(0,0,0,.1);
+transition:.2s;
+}
+.card:hover{
+transform:translateY(-5px);
+}
+.price{
+font-size:22px;
+font-weight:bold;
+margin:10px 0;
+color:#764ba2;
+}
+button{
+border:none;
+padding:12px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+.add{
+background:#667eea;
+color:white;
+width:100%;
+}
+.finish{
+background:#22c55e;
+color:white;
+width:100%;
+margin-top:15px;
+}
+.cart-item{
+padding:8px 0;
+border-bottom:1px solid #eee;
+}
+.total{
+font-size:24px;
+font-weight:bold;
+margin-top:15px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🛒 Order Manager Store</h1>
+<p>Interface para testar sua API Spring Boot</p>
+</header>
+
+<div class="container">
+
+<div class="panel">
+<h2>Cliente</h2>
+<select id="users">
+<option>Carregue usuários da API</option>
+</select>
+</div>
+
+<div class="panel">
+<h2>Produtos</h2>
+<div class="grid" id="products">
+
+<div class="card">
+<h3>Produto Exemplo</h3>
+<p>Descrição do produto</p>
+<div class="price">R$ 99,90</div>
+<button class="add">Adicionar ao Carrinho</button>
+</div>
+
+</div>
+</div>
+
+<div class="panel">
+<h2>🛍️ Carrinho</h2>
+<div id="cartItems">
+<p>Nenhum item adicionado.</p>
+</div>
+
+<div class="total">
+Total: R$ <span id="total">0,00</span>
+</div>
+
+<button class="finish">
+Finalizar Pedido
+</button>
+</div>
+
+</div>
+
+</body>
+</html>
