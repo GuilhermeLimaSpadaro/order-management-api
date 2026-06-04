@@ -10,19 +10,14 @@
           font-family: Arial;
           display: flex;
           height: 100vh;
-          background: #f5f7f6;
+          background: #f4f7f5;
         }
 
-        /* MENU */
         .sidebar {
           width: 240px;
           background: #0f3d2e;
           color: white;
           padding: 20px;
-        }
-
-        .sidebar h2 {
-          margin-bottom: 15px;
         }
 
         .sidebar button {
@@ -32,15 +27,14 @@
           background: #146c43;
           border: none;
           color: white;
-          cursor: pointer;
           border-radius: 6px;
+          cursor: pointer;
         }
 
         .sidebar button:hover {
           background: #1e8f5a;
         }
 
-        /* CONTEÚDO */
         .main {
           flex: 1;
           padding: 20px;
@@ -54,7 +48,6 @@
           box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
 
-        /* INPUTS */
         input, select {
           width: 100%;
           padding: 10px;
@@ -77,10 +70,17 @@
           background: #1e8f5a;
         }
 
-        .section { display: none; }
-        .active { display: block; }
+        .resultado {
+          margin-top: 15px;
+          padding: 10px;
+          background: #f1f5f2;
+          border-left: 4px solid #146c43;
+          white-space: pre-wrap;
+          font-size: 13px;
+        }
 
-        label { display:block; margin-bottom:5px; }
+        .section { display:none; }
+        .active { display:block; }
     </style>
 </head>
 
@@ -100,68 +100,80 @@
     <!-- USUÁRIOS -->
     <div id="usuarios" class="section active">
         <div class="card">
+
             <h2>Usuários</h2>
 
             <select onchange="renderUsuarios()" id="acaoUsuarios">
                 <option value="criar">Criar</option>
-                <option value="buscarId">Buscar por ID</option>
-                <option value="buscarTodos">Buscar todos</option>
+                <option value="buscar">Buscar</option>
+                <option value="listar">Listar todos</option>
                 <option value="atualizar">Atualizar</option>
                 <option value="deletar">Deletar</option>
             </select>
 
             <div id="formUsuarios"></div>
+            <div id="resUsuarios" class="resultado"></div>
+
         </div>
     </div>
 
     <!-- PRODUTOS -->
     <div id="produtos" class="section">
         <div class="card">
+
             <h2>Produtos</h2>
 
             <select onchange="renderProdutos()" id="acaoProdutos">
                 <option value="criar">Criar</option>
-                <option value="buscarId">Buscar por ID</option>
-                <option value="buscarTodos">Buscar todos</option>
+                <option value="buscar">Buscar</option>
+                <option value="listar">Listar todos</option>
                 <option value="atualizar">Atualizar</option>
                 <option value="deletar">Deletar</option>
             </select>
 
             <div id="formProdutos"></div>
+            <div id="resProdutos" class="resultado"></div>
+
         </div>
     </div>
 
     <!-- CATEGORIAS -->
     <div id="categorias" class="section">
         <div class="card">
+
             <h2>Categorias</h2>
 
             <select onchange="renderCategorias()" id="acaoCategorias">
                 <option value="criar">Criar</option>
-                <option value="buscarId">Buscar por ID</option>
-                <option value="buscarTodos">Buscar todos</option>
+                <option value="buscar">Buscar</option>
+                <option value="listar">Listar todos</option>
                 <option value="atualizar">Atualizar</option>
                 <option value="deletar">Deletar</option>
             </select>
 
             <div id="formCategorias"></div>
+            <div id="resCategorias" class="resultado"></div>
+
         </div>
     </div>
 
     <!-- PEDIDOS -->
     <div id="pedidos" class="section">
         <div class="card">
+
             <h2>Pedidos</h2>
 
             <select onchange="renderPedidos()" id="acaoPedidos">
                 <option value="criar">Criar</option>
-                <option value="buscarId">Buscar por ID</option>
-                <option value="buscarTodos">Buscar todos</option>
+                <option value="buscar">Buscar</option>
+                <option value="listar">Listar todos</option>
                 <option value="atualizar">Atualizar</option>
                 <option value="deletar">Deletar</option>
             </select>
 
             <div id="formPedidos"></div>
+            <div id="resPedidos" class="resultado"></div>
+
         </div>
     </div>
 
@@ -172,157 +184,318 @@
     const API = "http://localhost:8080";
 
     /* MENU */
-    function abrir(sec) {
+    function abrir(sec){
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
       document.getElementById(sec).classList.add('active');
     }
 
+    /* ================= UTIL ================= */
+
+    function mostrar(id, data){
+      document.getElementById(id).innerText =
+        JSON.stringify(data, null, 2);
+    }
+
     /* ================= USUÁRIOS ================= */
 
-    function renderUsuarios() {
+    function renderUsuarios(){
       const a = acaoUsuarios.value;
       const d = formUsuarios;
 
-      if (a === "buscarId") {
-        d.innerHTML = `<input id="u_id" placeholder="ID"><button class="action">Buscar</button>`;
-      }
-
-      if (a === "buscarTodos") {
-        d.innerHTML = `<button class="action">Buscar todos</button>`;
-      }
-
-      if (a === "criar") {
+      if(a==="buscar"){
         d.innerHTML = `
-          <input id="u_nome" placeholder="Nome">
-          <input id="u_email" placeholder="Email">
-          <input id="u_phone" placeholder="Telefone">
-          <input id="u_pass" placeholder="Senha">
-          <button class="action">Criar</button>
+          <input id="u_id" placeholder="ID">
+          <button class="action" onclick="buscarUsuario()">Buscar</button>
         `;
       }
 
-      if (a === "atualizar") {
+      if(a==="listar"){
+        d.innerHTML = `<button class="action" onclick="listarUsuarios()">Listar</button>`;
+      }
+
+      if(a==="criar"){
+        d.innerHTML = `
+          <input id="u_nome" placeholder="Nome">
+          <input id="u_email" placeholder="Email">
+          <input id="u_tel" placeholder="Telefone">
+          <input id="u_senha" placeholder="Senha">
+          <button class="action" onclick="criarUsuario()">Criar</button>
+        `;
+      }
+
+      if(a==="atualizar"){
         d.innerHTML = `
           <input id="u_id" placeholder="ID">
           <input id="u_nome" placeholder="Nome">
           <input id="u_email" placeholder="Email">
-          <input id="u_phone" placeholder="Telefone">
-          <input id="u_pass" placeholder="Senha">
-          <button class="action">Atualizar</button>
+          <input id="u_tel" placeholder="Telefone">
+          <input id="u_senha" placeholder="Senha">
+          <button class="action" onclick="atualizarUsuario()">Atualizar</button>
         `;
       }
 
-      if (a === "deletar") {
-        d.innerHTML = `<input id="u_id" placeholder="ID"><button class="action">Deletar</button>`;
+      if(a==="deletar"){
+        d.innerHTML = `
+          <input id="u_id" placeholder="ID">
+          <button class="action" onclick="deletarUsuario()">Deletar</button>
+        `;
       }
+    }
+
+    /* USUÁRIOS API */
+    function criarUsuario(){
+      fetch(API+"/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        name:u_nome.value,
+        email:u_email.value,
+        phone:u_tel.value,
+        password:u_senha.value
+      })}).then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
+    }
+
+    function buscarUsuario(){
+      fetch(API+"/users/"+u_id.value).then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
+    }
+
+    function listarUsuarios(){
+      fetch(API+"/users").then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
+    }
+
+    function deletarUsuario(){
+      fetch(API+"/users/"+u_id.value,{method:"DELETE"}).then(()=>mostrar("resUsuarios","Deletado"));
+    }
+
+    function atualizarUsuario(){
+      fetch(API+"/users/"+u_id.value,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          name:u_nome.value,
+          email:u_email.value,
+          phone:u_tel.value,
+          password:u_senha.value
+        })
+      }).then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
     }
 
     /* ================= PRODUTOS ================= */
 
-    function renderProdutos() {
+    function renderProdutos(){
       const a = acaoProdutos.value;
       const d = formProdutos;
 
-      if (a === "buscarId") {
-        d.innerHTML = `<input id="p_id" placeholder="ID"><button class="action">Buscar</button>`;
+      if(a==="buscar"){
+        d.innerHTML = `
+          <input id="p_id" placeholder="ID">
+          <button class="action" onclick="buscarProduto()">Buscar</button>
+        `;
       }
 
-      if (a === "buscarTodos") {
-        d.innerHTML = `<button class="action">Buscar todos</button>`;
+      if(a==="listar"){
+        d.innerHTML = `<button class="action" onclick="listarProdutos()">Listar</button>`;
       }
 
-      if (a === "criar") {
+      if(a==="criar"){
         d.innerHTML = `
           <input id="p_nome" placeholder="Nome">
           <input id="p_desc" placeholder="Descrição">
           <input id="p_preco" placeholder="Preço">
-          <button class="action">Criar</button>
+          <button class="action" onclick="criarProduto()">Criar</button>
         `;
       }
 
-      if (a === "atualizar") {
+      if(a==="atualizar"){
         d.innerHTML = `
           <input id="p_id" placeholder="ID">
           <input id="p_nome" placeholder="Nome">
           <input id="p_desc" placeholder="Descrição">
           <input id="p_preco" placeholder="Preço">
-          <button class="action">Atualizar</button>
+          <button class="action" onclick="atualizarProduto()">Atualizar</button>
         `;
       }
 
-      if (a === "deletar") {
-        d.innerHTML = `<input id="p_id" placeholder="ID"><button class="action">Deletar</button>`;
+      if(a==="deletar"){
+        d.innerHTML = `
+          <input id="p_id" placeholder="ID">
+          <button class="action" onclick="deletarProduto()">Deletar</button>
+        `;
       }
+    }
+
+    /* PRODUTOS API */
+    function criarProduto(){
+      fetch(API+"/products",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        name:p_nome.value,
+        description:p_desc.value,
+        price:Number(p_preco.value)
+      })}).then(r=>r.json()).then(d=>mostrar("resProdutos",d));
+    }
+
+    function buscarProduto(){
+      fetch(API+"/products/"+p_id.value).then(r=>r.json()).then(d=>mostrar("resProdutos",d));
+    }
+
+    function listarProdutos(){
+      fetch(API+"/products").then(r=>r.json()).then(d=>mostrar("resProdutos",d));
+    }
+
+    function deletarProduto(){
+      fetch(API+"/products/"+p_id.value,{method:"DELETE"}).then(()=>mostrar("resProdutos","Deletado"));
+    }
+
+    function atualizarProduto(){
+      fetch(API+"/products/"+p_id.value,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          name:p_nome.value,
+          description:p_desc.value,
+          price:Number(p_preco.value)
+        })
+      }).then(r=>r.json()).then(d=>mostrar("resProdutos",d));
     }
 
     /* ================= CATEGORIAS ================= */
 
-    function renderCategorias() {
+    function renderCategorias(){
       const a = acaoCategorias.value;
       const d = formCategorias;
 
-      if (a === "buscarId") {
-        d.innerHTML = `<input id="c_id" placeholder="ID"><button class="action">Buscar</button>`;
-      }
-
-      if (a === "buscarTodos") {
-        d.innerHTML = `<button class="action">Buscar todos</button>`;
-      }
-
-      if (a === "criar") {
-        d.innerHTML = `
-          <input id="c_nome" placeholder="Nome categoria">
-          <button class="action">Criar</button>
-        `;
-      }
-
-      if (a === "atualizar") {
+      if(a==="buscar"){
         d.innerHTML = `
           <input id="c_id" placeholder="ID">
-          <input id="c_nome" placeholder="Nome categoria">
-          <button class="action">Atualizar</button>
+          <button class="action" onclick="buscarCategoria()">Buscar</button>
         `;
       }
 
-      if (a === "deletar") {
-        d.innerHTML = `<input id="c_id" placeholder="ID"><button class="action">Deletar</button>`;
+      if(a==="listar"){
+        d.innerHTML = `<button class="action" onclick="listarCategorias()">Listar</button>`;
       }
+
+      if(a==="criar"){
+        d.innerHTML = `
+          <input id="c_nome" placeholder="Nome">
+          <button class="action" onclick="criarCategoria()">Criar</button>
+        `;
+      }
+
+      if(a==="atualizar"){
+        d.innerHTML = `
+          <input id="c_id" placeholder="ID">
+          <input id="c_nome" placeholder="Nome">
+          <button class="action" onclick="atualizarCategoria()">Atualizar</button>
+        `;
+      }
+
+      if(a==="deletar"){
+        d.innerHTML = `
+          <input id="c_id" placeholder="ID">
+          <button class="action" onclick="deletarCategoria()">Deletar</button>
+        `;
+      }
+    }
+
+    /* CATEGORIAS API */
+    function criarCategoria(){
+      fetch(API+"/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        name:c_nome.value
+      })}).then(r=>r.json()).then(d=>mostrar("resCategorias",d));
+    }
+
+    function buscarCategoria(){
+      fetch(API+"/categories/"+c_id.value).then(r=>r.json()).then(d=>mostrar("resCategorias",d));
+    }
+
+    function listarCategorias(){
+      fetch(API+"/categories").then(r=>r.json()).then(d=>mostrar("resCategorias",d));
+    }
+
+    function deletarCategoria(){
+      fetch(API+"/categories/"+c_id.value,{method:"DELETE"}).then(()=>mostrar("resCategorias","Deletado"));
+    }
+
+    function atualizarCategoria(){
+      fetch(API+"/categories/"+c_id.value,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          name:c_nome.value
+        })
+      }).then(r=>r.json()).then(d=>mostrar("resCategorias",d));
     }
 
     /* ================= PEDIDOS ================= */
 
-    function renderPedidos() {
+    function renderPedidos(){
       const a = acaoPedidos.value;
       const d = formPedidos;
 
-      if (a === "buscarId") {
-        d.innerHTML = `<input id="o_id" placeholder="ID"><button class="action">Buscar</button>`;
+      if(a==="buscar"){
+        d.innerHTML = `
+          <input id="o_id" placeholder="ID">
+          <button class="action" onclick="buscarPedido()">Buscar</button>
+        `;
       }
 
-      if (a === "buscarTodos") {
-        d.innerHTML = `<button class="action">Buscar todos</button>`;
+      if(a==="listar"){
+        d.innerHTML = `<button class="action" onclick="listarPedidos()">Listar</button>`;
       }
 
-      if (a === "criar") {
+      if(a==="criar"){
         d.innerHTML = `
           <input id="o_cliente" placeholder="ID cliente">
           <input id="o_status" placeholder="Status">
-          <input id="o_data" placeholder="Data (yyyy-MM-ddTHH:mm:ss)">
-          <button class="action">Criar</button>
+          <input id="o_data" placeholder="Data">
+          <button class="action" onclick="criarPedido()">Criar</button>
         `;
       }
 
-      if (a === "atualizar") {
+      if(a==="atualizar"){
         d.innerHTML = `
           <input id="o_id" placeholder="ID">
           <input id="o_status" placeholder="Status">
-          <button class="action">Atualizar</button>
+          <button class="action" onclick="atualizarPedido()">Atualizar</button>
         `;
       }
 
-      if (a === "deletar") {
-        d.innerHTML = `<input id="o_id" placeholder="ID"><button class="action">Deletar</button>`;
+      if(a==="deletar"){
+        d.innerHTML = `
+          <input id="o_id" placeholder="ID">
+          <button class="action" onclick="deletarPedido()">Deletar</button>
+        `;
       }
+    }
+
+    /* PEDIDOS API */
+    function criarPedido(){
+      fetch(API+"/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
+        client:{id:Number(o_cliente.value)},
+        orderStatus:Number(o_status.value),
+        moment:o_data.value
+      })}).then(r=>r.json()).then(d=>mostrar("resPedidos",d));
+    }
+
+    function buscarPedido(){
+      fetch(API+"/orders/"+o_id.value).then(r=>r.json()).then(d=>mostrar("resPedidos",d));
+    }
+
+    function listarPedidos(){
+      fetch(API+"/orders").then(r=>r.json()).then(d=>mostrar("resPedidos",d));
+    }
+
+    function deletarPedido(){
+      fetch(API+"/orders/"+o_id.value,{method:"DELETE"}).then(()=>mostrar("resPedidos","Deletado"));
+    }
+
+    function atualizarPedido(){
+      fetch(API+"/orders/"+o_id.value,{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          orderStatus:Number(o_status.value),
+          client:{id:Number(o_cliente.value)},
+          moment:o_data.value
+        })
+      }).then(r=>r.json()).then(d=>mostrar("resPedidos",d));
     }
 
     /* INIT */
