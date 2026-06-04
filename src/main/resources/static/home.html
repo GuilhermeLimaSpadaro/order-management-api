@@ -1,510 +1,1197 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Painel API</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Manager API — Painel de Testes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde-escuro: #0a2e1a;
+    --verde-medio: #14532d;
+    --verde-vivo: #16a34a;
+    --verde-claro: #22c55e;
+    --verde-neon: #4ade80;
+    --branco: #f8fafc;
+    --cinza-claro: #e2e8f0;
+    --cinza-medio: #94a3b8;
+    --cinza-escuro: #1e293b;
+    --dourado: #ca8a04;
+    --vermelho: #dc2626;
+    --fundo: #061410;
+    --card-bg: rgba(10, 46, 26, 0.7);
+    --borda: rgba(34, 197, 94, 0.2);
+    --borda-hover: rgba(74, 222, 128, 0.5);
+  }
 
-    <style>
-        body {
-          margin: 0;
-          font-family: Arial;
-          display: flex;
-          height: 100vh;
-          background: #f4f7f5;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .sidebar {
-          width: 240px;
-          background: #0f3d2e;
-          color: white;
-          padding: 20px;
-        }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--fundo);
+    color: var(--branco);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-        .sidebar button {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 8px;
-          background: #146c43;
-          border: none;
-          color: white;
-          border-radius: 6px;
-          cursor: pointer;
-        }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(22, 163, 74, 0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 90% 80%, rgba(10, 46, 26, 0.4) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        .sidebar button:hover {
-          background: #1e8f5a;
-        }
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6, 20, 16, 0.95);
+    border-bottom: 1px solid var(--borda);
+    backdrop-filter: blur(12px);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
 
-        .main {
-          flex: 1;
-          padding: 20px;
-        }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-        .card {
-          background: white;
-          padding: 20px;
-          border-radius: 10px;
-          max-width: 750px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--verde-vivo);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
 
-        input, select {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 10px;
-          border-radius: 6px;
-          border: 1px solid #ccc;
-        }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    color: var(--branco);
+  }
 
-        button.action {
-          width: 100%;
-          padding: 10px;
-          background: #146c43;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-        }
+  .logo-text span { color: var(--verde-claro); }
 
-        button.action:hover {
-          background: #1e8f5a;
-        }
+  .header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    background: rgba(22, 163, 74, 0.15);
+    border: 1px solid var(--borda);
+    color: var(--verde-neon);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
 
-        .resultado {
-          margin-top: 15px;
-          padding: 10px;
-          background: #f1f5f2;
-          border-left: 4px solid #146c43;
-          white-space: pre-wrap;
-          font-size: 13px;
-        }
+  .base-url-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(20, 83, 45, 0.3);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 6px 14px;
+  }
 
-        .section { display:none; }
-        .active { display:block; }
-    </style>
+  .base-url-bar label {
+    font-size: 0.7rem;
+    color: var(--verde-claro);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .base-url-bar input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--branco);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    width: 220px;
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2rem;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: sticky;
+    top: 80px;
+    height: fit-content;
+  }
+
+  .sidebar-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--cinza-medio);
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  .nav-group {
+    margin-bottom: 8px;
+  }
+
+  .nav-resource {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--cinza-medio);
+  }
+
+  .nav-resource:hover, .nav-resource.active {
+    background: rgba(22, 163, 74, 0.1);
+    border-color: var(--borda);
+    color: var(--branco);
+  }
+
+  .nav-resource.active { color: var(--verde-neon); }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN ── */
+  .main { display: flex; flex-direction: column; gap: 2rem; }
+
+  /* ── RESOURCE SECTION ── */
+  .resource-section { display: none; flex-direction: column; gap: 1.2rem; }
+  .resource-section.active { display: flex; }
+
+  .resource-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 4px;
+  }
+
+  .resource-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .resource-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .resource-subtitle {
+    font-size: 0.8rem;
+    color: var(--cinza-medio);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* ── ENDPOINT CARD ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.25s;
+    backdrop-filter: blur(8px);
+  }
+
+  .card:hover { border-color: var(--borda-hover); }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .method-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 1px;
+    min-width: 58px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .badge-get    { background: rgba(34, 197, 94, 0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+  .badge-post   { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+  .badge-put    { background: rgba(202, 138, 4, 0.15);  color: #fbbf24; border: 1px solid rgba(202,138,4,0.3); }
+  .badge-delete { background: rgba(220, 38, 38, 0.15);  color: #f87171; border: 1px solid rgba(220,38,38,0.3); }
+
+  .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .card-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--cinza-medio);
+  }
+
+  .card-chevron {
+    color: var(--cinza-medio);
+    transition: transform 0.25s;
+    font-size: 12px;
+  }
+
+  .card.open .card-chevron { transform: rotate(180deg); }
+
+  .card-body {
+    display: none;
+    padding: 0 20px 20px;
+    border-top: 1px solid var(--borda);
+    padding-top: 20px;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card.open .card-body { display: flex; }
+
+  /* ── FORM FIELDS ── */
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--verde-claro);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field-label .required {
+    color: var(--vermelho);
+    font-size: 10px;
+  }
+
+  .field-label .type-hint {
+    color: var(--cinza-medio);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .field-input, .field-textarea, .field-select {
+    background: rgba(6, 20, 16, 0.8);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    border-radius: 8px;
+    color: var(--branco);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    padding: 10px 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .field-input:focus, .field-textarea:focus, .field-select:focus {
+    border-color: var(--verde-vivo);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  }
+
+  .field-input::placeholder { color: var(--cinza-medio); }
+
+  .field-textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.6;
+  }
+
+  .field-select option { background: var(--verde-escuro); }
+
+  .fields-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+  /* ── SEND BUTTON ── */
+  .btn-send {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--verde-vivo);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    align-self: flex-start;
+  }
+
+  .btn-send:hover { background: var(--verde-claro); transform: translateY(-1px); }
+  .btn-send:active { transform: translateY(0); }
+  .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-send .spinner {
+    display: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  .btn-send.loading .spinner { display: block; }
+  .btn-send.loading .btn-label { display: none; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── RESPONSE ── */
+  .response-box {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--borda);
+  }
+
+  .response-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(10, 46, 26, 0.6);
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .response-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .status-ok   { background: var(--verde-claro); box-shadow: 0 0 6px rgba(34,197,94,0.6); }
+  .status-err  { background: var(--vermelho); box-shadow: 0 0 6px rgba(220,38,38,0.6); }
+
+  .response-time { color: var(--cinza-medio); }
+
+  .response-body {
+    background: rgba(4, 12, 8, 0.9);
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.7;
+    color: var(--cinza-claro);
+    max-height: 320px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .response-body::-webkit-scrollbar { width: 6px; }
+  .response-body::-webkit-scrollbar-track { background: transparent; }
+  .response-body::-webkit-scrollbar-thumb { background: var(--verde-medio); border-radius: 3px; }
+
+  /* JSON syntax highlight */
+  .json-key    { color: #4ade80; }
+  .json-string { color: #fbbf24; }
+  .json-number { color: #60a5fa; }
+  .json-bool   { color: #f472b6; }
+  .json-null   { color: #94a3b8; }
+
+  /* ── SECTION DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--borda), transparent);
+    margin: 4px 0;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast-item {
+    background: rgba(10, 46, 26, 0.95);
+    border: 1px solid var(--borda-hover);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    backdrop-filter: blur(12px);
+    animation: slideIn 0.3s ease;
+    max-width: 280px;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-response {
+    padding: 16px;
+    text-align: center;
+    color: var(--cinza-medio);
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--verde-medio); border-radius: 3px; }
+</style>
 </head>
-
 <body>
 
-<div class="sidebar">
-    <h2>PAINEL API</h2>
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🌿</div>
+    <div class="logo-text">ORDER<span>MANAGER</span></div>
+  </div>
+  <div class="header-badge">API TESTER v1.0</div>
+</header>
 
-    <button onclick="abrir('usuarios')">Usuários</button>
-    <button onclick="abrir('produtos')">Produtos</button>
-    <button onclick="abrir('categorias')">Categorias</button>
-    <button onclick="abrir('pedidos')">Pedidos</button>
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Recursos</div>
+
+    <div class="nav-group">
+      <div class="nav-resource active" onclick="showSection('usuarios')">
+        <div class="nav-dot" style="background:#60a5fa"></div>
+        Usuários
+      </div>
+      <div class="nav-resource" onclick="showSection('pedidos')">
+        <div class="nav-dot" style="background:#fbbf24"></div>
+        Pedidos
+      </div>
+      <div class="nav-resource" onclick="showSection('produtos')">
+        <div class="nav-dot" style="background:#4ade80"></div>
+        Produtos
+      </div>
+      <div class="nav-resource" onclick="showSection('categorias')">
+        <div class="nav-dot" style="background:#f472b6"></div>
+        Categorias
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══════════ USUÁRIOS ═══════════ -->
+    <section class="resource-section active" id="section-usuarios">
+      <div class="resource-header">
+        <div class="resource-icon" style="background:rgba(96,165,250,0.15)">👤</div>
+        <div>
+          <div class="resource-title" style="color:#60a5fa">Usuários</div>
+          <div class="resource-subtitle">/users</div>
+        </div>
+      </div>
+
+      <!-- Listar Todos -->
+      <div class="card" id="card-users-list">
+        <div class="card-header" onclick="toggleCard('card-users-list')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Listar Todos os Usuários</span>
+          <span class="card-path">/users</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <button class="btn-send" onclick="sendRequest('GET','/users',null,'card-users-list')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Buscar por ID -->
+      <div class="card" id="card-users-get">
+        <div class="card-header" onclick="toggleCard('card-users-get')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Buscar Usuário por ID</span>
+          <span class="card-path">/users/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="u-get-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" onclick="sendRequest('GET','/users/'+v('u-get-id'),null,'card-users-get')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Cadastrar -->
+      <div class="card" id="card-users-post">
+        <div class="card-header" onclick="toggleCard('card-users-post')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="card-title">Cadastrar Usuário</span>
+          <span class="card-path">/users</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Nome <span class="required">*</span> <span class="type-hint">String</span></label>
+              <input class="field-input" type="text" id="u-post-name" placeholder="ex: João Silva">
+            </div>
+            <div class="field-group">
+              <label class="field-label">E-mail <span class="required">*</span> <span class="type-hint">String</span></label>
+              <input class="field-input" type="email" id="u-post-email" placeholder="ex: joao@email.com">
+            </div>
+          </div>
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Telefone <span class="type-hint">String</span></label>
+              <input class="field-input" type="text" id="u-post-phone" placeholder="ex: 11999998888">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Senha <span class="required">*</span> <span class="type-hint">String</span></label>
+              <input class="field-input" type="password" id="u-post-password" placeholder="••••••••">
+            </div>
+          </div>
+          <button class="btn-send" onclick="sendRequest('POST','/users',{name:v('u-post-name'),email:v('u-post-email'),phone:v('u-post-phone'),password:v('u-post-password')},'card-users-post')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Atualizar -->
+      <div class="card" id="card-users-put">
+        <div class="card-header" onclick="toggleCard('card-users-put')">
+          <span class="method-badge badge-put">PUT</span>
+          <span class="card-title">Atualizar Usuário</span>
+          <span class="card-path">/users/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="u-put-id" placeholder="ex: 1">
+          </div>
+          <div class="divider"></div>
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Novo Nome <span class="type-hint">String</span></label>
+              <input class="field-input" type="text" id="u-put-name" placeholder="ex: João Silva">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Novo E-mail <span class="type-hint">String</span></label>
+              <input class="field-input" type="email" id="u-put-email" placeholder="ex: joao@email.com">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Novo Telefone <span class="type-hint">String</span></label>
+            <input class="field-input" type="text" id="u-put-phone" placeholder="ex: 11999998888">
+          </div>
+          <button class="btn-send" onclick="sendRequest('PUT','/users/'+v('u-put-id'),{name:v('u-put-name'),email:v('u-put-email'),phone:v('u-put-phone')},'card-users-put')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Excluir -->
+      <div class="card" id="card-users-delete">
+        <div class="card-header" onclick="toggleCard('card-users-delete')">
+          <span class="method-badge badge-delete">DELETE</span>
+          <span class="card-title">Excluir Usuário</span>
+          <span class="card-path">/users/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="u-del-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" style="background:#991b1b" onclick="sendRequest('DELETE','/users/'+v('u-del-id'),null,'card-users-delete')">
+            <div class="spinner"></div>
+            <span class="btn-label">🗑 Excluir</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PEDIDOS ═══════════ -->
+    <section class="resource-section" id="section-pedidos">
+      <div class="resource-header">
+        <div class="resource-icon" style="background:rgba(251,191,36,0.15)">📦</div>
+        <div>
+          <div class="resource-title" style="color:#fbbf24">Pedidos</div>
+          <div class="resource-subtitle">/orders</div>
+        </div>
+      </div>
+
+      <!-- Listar Todos -->
+      <div class="card" id="card-orders-list">
+        <div class="card-header" onclick="toggleCard('card-orders-list')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Listar Todos os Pedidos</span>
+          <span class="card-path">/orders</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <button class="btn-send" onclick="sendRequest('GET','/orders',null,'card-orders-list')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Buscar por ID -->
+      <div class="card" id="card-orders-get">
+        <div class="card-header" onclick="toggleCard('card-orders-get')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Buscar Pedido por ID</span>
+          <span class="card-path">/orders/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="o-get-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" onclick="sendRequest('GET','/orders/'+v('o-get-id'),null,'card-orders-get')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Registrar Pedido -->
+      <div class="card" id="card-orders-post">
+        <div class="card-header" onclick="toggleCard('card-orders-post')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="card-title">Registrar Pedido</span>
+          <span class="card-path">/orders</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Momento <span class="required">*</span> <span class="type-hint">LocalDateTime</span></label>
+              <input class="field-input" type="datetime-local" id="o-post-moment">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Status <span class="required">*</span> <span class="type-hint">Integer</span></label>
+              <select class="field-select field-input" id="o-post-status">
+                <option value="1">1 — Aguardando Pagamento</option>
+                <option value="2">2 — Pago</option>
+                <option value="3">3 — Enviado</option>
+                <option value="4">4 — Entregue</option>
+                <option value="5">5 — Cancelado</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">ID do Cliente <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="o-post-client-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" onclick="sendRequest('POST','/orders',{moment:v('o-post-moment'),orderStatus:parseInt(v('o-post-status')),client:{id:parseInt(v('o-post-client-id'))}},'card-orders-post')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Atualizar Pedido -->
+      <div class="card" id="card-orders-put">
+        <div class="card-header" onclick="toggleCard('card-orders-put')">
+          <span class="method-badge badge-put">PUT</span>
+          <span class="card-title">Atualizar Pedido</span>
+          <span class="card-path">/orders/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="o-put-id" placeholder="ex: 1">
+          </div>
+          <div class="divider"></div>
+          <div class="field-group">
+            <label class="field-label">Novo Status <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <select class="field-select field-input" id="o-put-status">
+              <option value="1">1 — Aguardando Pagamento</option>
+              <option value="2">2 — Pago</option>
+              <option value="3">3 — Enviado</option>
+              <option value="4">4 — Entregue</option>
+              <option value="5">5 — Cancelado</option>
+            </select>
+          </div>
+          <button class="btn-send" onclick="sendRequest('PUT','/orders/'+v('o-put-id'),{orderStatus:parseInt(v('o-put-status'))},'card-orders-put')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Excluir Pedido -->
+      <div class="card" id="card-orders-delete">
+        <div class="card-header" onclick="toggleCard('card-orders-delete')">
+          <span class="method-badge badge-delete">DELETE</span>
+          <span class="card-title">Excluir Pedido</span>
+          <span class="card-path">/orders/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Long</span></label>
+            <input class="field-input" type="number" id="o-del-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" style="background:#991b1b" onclick="sendRequest('DELETE','/orders/'+v('o-del-id'),null,'card-orders-delete')">
+            <div class="spinner"></div>
+            <span class="btn-label">🗑 Excluir</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PRODUTOS ═══════════ -->
+    <section class="resource-section" id="section-produtos">
+      <div class="resource-header">
+        <div class="resource-icon" style="background:rgba(74,222,128,0.15)">🏷️</div>
+        <div>
+          <div class="resource-title" style="color:#4ade80">Produtos</div>
+          <div class="resource-subtitle">/products</div>
+        </div>
+      </div>
+
+      <!-- Listar Todos -->
+      <div class="card" id="card-products-list">
+        <div class="card-header" onclick="toggleCard('card-products-list')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Listar Todos os Produtos</span>
+          <span class="card-path">/products</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <button class="btn-send" onclick="sendRequest('GET','/products',null,'card-products-list')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Buscar por ID -->
+      <div class="card" id="card-products-get">
+        <div class="card-header" onclick="toggleCard('card-products-get')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Buscar Produto por ID</span>
+          <span class="card-path">/products/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <input class="field-input" type="number" id="p-get-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" onclick="sendRequest('GET','/products/'+v('p-get-id'),null,'card-products-get')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Cadastrar Produto -->
+      <div class="card" id="card-products-post">
+        <div class="card-header" onclick="toggleCard('card-products-post')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="card-title">Cadastrar Produto</span>
+          <span class="card-path">/products</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Nome <span class="required">*</span> <span class="type-hint">String</span></label>
+              <input class="field-input" type="text" id="p-post-name" placeholder="ex: Camisa Regata">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Preço <span class="required">*</span> <span class="type-hint">Double</span></label>
+              <input class="field-input" type="number" step="0.01" id="p-post-price" placeholder="ex: 89.90">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Descrição <span class="type-hint">String</span></label>
+            <input class="field-input" type="text" id="p-post-desc" placeholder="ex: Camisa oficial do time">
+          </div>
+          <div class="field-group">
+            <label class="field-label">URL da Imagem <span class="type-hint">String</span></label>
+            <input class="field-input" type="url" id="p-post-imgurl" placeholder="https://...">
+          </div>
+          <button class="btn-send" onclick="sendRequest('POST','/products',{name:v('p-post-name'),description:v('p-post-desc'),price:parseFloat(v('p-post-price')),imgUrl:v('p-post-imgurl')},'card-products-post')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Atualizar Produto -->
+      <div class="card" id="card-products-put">
+        <div class="card-header" onclick="toggleCard('card-products-put')">
+          <span class="method-badge badge-put">PUT</span>
+          <span class="card-title">Atualizar Produto</span>
+          <span class="card-path">/products/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <input class="field-input" type="number" id="p-put-id" placeholder="ex: 1">
+          </div>
+          <div class="divider"></div>
+          <div class="fields-row">
+            <div class="field-group">
+              <label class="field-label">Novo Nome <span class="type-hint">String</span></label>
+              <input class="field-input" type="text" id="p-put-name" placeholder="ex: Camisa Regata">
+            </div>
+            <div class="field-group">
+              <label class="field-label">Novo Preço <span class="type-hint">Double</span></label>
+              <input class="field-input" type="number" step="0.01" id="p-put-price" placeholder="ex: 99.90">
+            </div>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Nova Descrição <span class="type-hint">String</span></label>
+            <input class="field-input" type="text" id="p-put-desc" placeholder="ex: Edição especial">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Nova URL da Imagem <span class="type-hint">String</span></label>
+            <input class="field-input" type="url" id="p-put-imgurl" placeholder="https://...">
+          </div>
+          <button class="btn-send" onclick="sendRequest('PUT','/products/'+v('p-put-id'),{name:v('p-put-name'),description:v('p-put-desc'),price:parseFloat(v('p-put-price'))||undefined,imgUrl:v('p-put-imgurl')},'card-products-put')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Excluir Produto -->
+      <div class="card" id="card-products-delete">
+        <div class="card-header" onclick="toggleCard('card-products-delete')">
+          <span class="method-badge badge-delete">DELETE</span>
+          <span class="card-title">Excluir Produto</span>
+          <span class="card-path">/products/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <input class="field-input" type="number" id="p-del-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" style="background:#991b1b" onclick="sendRequest('DELETE','/products/'+v('p-del-id'),null,'card-products-delete')">
+            <div class="spinner"></div>
+            <span class="btn-label">🗑 Excluir</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ CATEGORIAS ═══════════ -->
+    <section class="resource-section" id="section-categorias">
+      <div class="resource-header">
+        <div class="resource-icon" style="background:rgba(244,114,182,0.15)">🗂️</div>
+        <div>
+          <div class="resource-title" style="color:#f472b6">Categorias</div>
+          <div class="resource-subtitle">/categories</div>
+        </div>
+      </div>
+
+      <!-- Listar Todas -->
+      <div class="card" id="card-cat-list">
+        <div class="card-header" onclick="toggleCard('card-cat-list')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Listar Todas as Categorias</span>
+          <span class="card-path">/categories</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <button class="btn-send" onclick="sendRequest('GET','/categories',null,'card-cat-list')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Buscar por ID -->
+      <div class="card" id="card-cat-get">
+        <div class="card-header" onclick="toggleCard('card-cat-get')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="card-title">Buscar Categoria por ID</span>
+          <span class="card-path">/categories/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <input class="field-input" type="number" id="c-get-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" onclick="sendRequest('GET','/categories/'+v('c-get-id'),null,'card-cat-get')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Cadastrar Categoria -->
+      <div class="card" id="card-cat-post">
+        <div class="card-header" onclick="toggleCard('card-cat-post')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="card-title">Cadastrar Categoria</span>
+          <span class="card-path">/categories</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">Nome <span class="required">*</span> <span class="type-hint">String</span></label>
+            <input class="field-input" type="text" id="c-post-name" placeholder="ex: Vestuário">
+          </div>
+          <button class="btn-send" onclick="sendRequest('POST','/categories',{name:v('c-post-name')},'card-cat-post')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Atualizar Categoria -->
+      <div class="card" id="card-cat-put">
+        <div class="card-header" onclick="toggleCard('card-cat-put')">
+          <span class="method-badge badge-put">PUT</span>
+          <span class="card-title">Atualizar Categoria</span>
+          <span class="card-path">/categories/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <input class="field-input" type="number" id="c-put-id" placeholder="ex: 1">
+          </div>
+          <div class="divider"></div>
+          <div class="field-group">
+            <label class="field-label">Novo Nome <span class="required">*</span> <span class="type-hint">String</span></label>
+            <input class="field-input" type="text" id="c-put-name" placeholder="ex: Acessórios">
+          </div>
+          <button class="btn-send" onclick="sendRequest('PUT','/categories/'+v('c-put-id'),{name:v('c-put-name')},'card-cat-put')">
+            <div class="spinner"></div>
+            <span class="btn-label">▶ Enviar Requisição</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+
+      <!-- Excluir Categoria -->
+      <div class="card" id="card-cat-delete">
+        <div class="card-header" onclick="toggleCard('card-cat-delete')">
+          <span class="method-badge badge-delete">DELETE</span>
+          <span class="card-title">Excluir Categoria</span>
+          <span class="card-path">/categories/{id}</span>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="field-group">
+            <label class="field-label">ID <span class="required">*</span> <span class="type-hint">Integer</span></label>
+            <input class="field-input" type="number" id="c-del-id" placeholder="ex: 1">
+          </div>
+          <button class="btn-send" style="background:#991b1b" onclick="sendRequest('DELETE','/categories/'+v('c-del-id'),null,'card-cat-delete')">
+            <div class="spinner"></div>
+            <span class="btn-label">🗑 Excluir</span>
+          </button>
+          <div class="response-box"><div class="empty-response">Nenhuma requisição enviada.</div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
-<div class="main">
-
-    <!-- USUÁRIOS -->
-    <div id="usuarios" class="section active">
-        <div class="card">
-
-            <h2>Usuários</h2>
-
-            <select onchange="renderUsuarios()" id="acaoUsuarios">
-                <option value="criar">Criar</option>
-                <option value="buscar">Buscar</option>
-                <option value="listar">Listar todos</option>
-                <option value="atualizar">Atualizar</option>
-                <option value="deletar">Deletar</option>
-            </select>
-
-            <div id="formUsuarios"></div>
-            <div id="resUsuarios" class="resultado"></div>
-
-        </div>
-    </div>
-
-    <!-- PRODUTOS -->
-    <div id="produtos" class="section">
-        <div class="card">
-
-            <h2>Produtos</h2>
-
-            <select onchange="renderProdutos()" id="acaoProdutos">
-                <option value="criar">Criar</option>
-                <option value="buscar">Buscar</option>
-                <option value="listar">Listar todos</option>
-                <option value="atualizar">Atualizar</option>
-                <option value="deletar">Deletar</option>
-            </select>
-
-            <div id="formProdutos"></div>
-            <div id="resProdutos" class="resultado"></div>
-
-        </div>
-    </div>
-
-    <!-- CATEGORIAS -->
-    <div id="categorias" class="section">
-        <div class="card">
-
-            <h2>Categorias</h2>
-
-            <select onchange="renderCategorias()" id="acaoCategorias">
-                <option value="criar">Criar</option>
-                <option value="buscar">Buscar</option>
-                <option value="listar">Listar todos</option>
-                <option value="atualizar">Atualizar</option>
-                <option value="deletar">Deletar</option>
-            </select>
-
-            <div id="formCategorias"></div>
-            <div id="resCategorias" class="resultado"></div>
-
-        </div>
-    </div>
-
-    <!-- PEDIDOS -->
-    <div id="pedidos" class="section">
-        <div class="card">
-
-            <h2>Pedidos</h2>
-
-            <select onchange="renderPedidos()" id="acaoPedidos">
-                <option value="criar">Criar</option>
-                <option value="buscar">Buscar</option>
-                <option value="listar">Listar todos</option>
-                <option value="atualizar">Atualizar</option>
-                <option value="deletar">Deletar</option>
-            </select>
-
-            <div id="formPedidos"></div>
-            <div id="resPedidos" class="resultado"></div>
-
-        </div>
-    </div>
-
-</div>
+<!-- TOAST -->
+<div id="toast"></div>
 
 <script>
+  // ── Helpers ──
+  const v = id => document.getElementById(id)?.value ?? '';
 
-    const API = "https://order-management-production-20f1.up.railway.app";
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
 
-    /* MENU */
-    function abrir(sec){
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(sec).classList.add('active');
-    }
+  function showSection(name) {
+    document.querySelectorAll('.resource-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-resource').forEach(n => n.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
 
-    /* ================= UTIL ================= */
+  // ── JSON Syntax Highlight ──
+  function highlight(json) {
+    if (typeof json !== 'string') json = JSON.stringify(json, null, 2);
+    return json
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+        let cls = 'json-number';
+        if (/^"/.test(m)) cls = /:$/.test(m) ? 'json-key' : 'json-string';
+        else if (/true|false/.test(m)) cls = 'json-bool';
+        else if (/null/.test(m)) cls = 'json-null';
+        return `<span class="${cls}">${m}</span>`;
+      });
+  }
 
-    function mostrar(id, data){
-      document.getElementById(id).innerText =
-        JSON.stringify(data, null, 2);
-    }
+  // ── Toast ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    const el = document.createElement('div');
+    el.className = 'toast-item';
+    el.textContent = msg;
+    t.appendChild(el);
+    setTimeout(() => el.remove(), 3500);
+  }
 
-    /* ================= USUÁRIOS ================= */
+  // ── Render Response ──
+  function renderResponse(cardId, status, body, ms) {
+    const card = document.getElementById(cardId);
+    const box = card.querySelector('.response-box');
+    const ok = status >= 200 && status < 300;
+    const statusText = status === 0 ? 'ERRO DE REDE' : status;
 
-    function renderUsuarios(){
-      const a = acaoUsuarios.value;
-      const d = formUsuarios;
-
-      if(a==="buscar"){
-        d.innerHTML = `
-          <input id="u_id" placeholder="ID">
-          <button class="action" onclick="buscarUsuario()">Buscar</button>
-        `;
-      }
-
-      if(a==="listar"){
-        d.innerHTML = `<button class="action" onclick="listarUsuarios()">Listar</button>`;
-      }
-
-      if(a==="criar"){
-        d.innerHTML = `
-          <input id="u_nome" placeholder="Nome">
-          <input id="u_email" placeholder="Email">
-          <input id="u_tel" placeholder="Telefone">
-          <input id="u_senha" placeholder="Senha">
-          <button class="action" onclick="criarUsuario()">Criar</button>
-        `;
-      }
-
-      if(a==="atualizar"){
-        d.innerHTML = `
-          <input id="u_id" placeholder="ID">
-          <input id="u_nome" placeholder="Nome">
-          <input id="u_email" placeholder="Email">
-          <input id="u_tel" placeholder="Telefone">
-          <input id="u_senha" placeholder="Senha">
-          <button class="action" onclick="atualizarUsuario()">Atualizar</button>
-        `;
-      }
-
-      if(a==="deletar"){
-        d.innerHTML = `
-          <input id="u_id" placeholder="ID">
-          <button class="action" onclick="deletarUsuario()">Deletar</button>
-        `;
+    let bodyHtml = '';
+    if (body === null || body === '') {
+      bodyHtml = '<span style="color:#94a3b8;font-style:italic">Sem conteúdo (204 No Content)</span>';
+    } else {
+      try {
+        const parsed = typeof body === 'string' ? JSON.parse(body) : body;
+        bodyHtml = highlight(JSON.stringify(parsed, null, 2));
+      } catch {
+        bodyHtml = body;
       }
     }
 
-    /* USUÁRIOS API */
-    function criarUsuario(){
-      fetch(API+"/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        name:u_nome.value,
-        email:u_email.value,
-        phone:u_tel.value,
-        password:u_senha.value
-      })}).then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
-    }
+    box.innerHTML = `
+      <div class="response-header">
+        <div class="response-status">
+          <div class="status-dot ${ok ? 'status-ok' : 'status-err'}"></div>
+          <span style="color:${ok ? '#4ade80' : '#f87171'}">${statusText}</span>
+        </div>
+        <span class="response-time">${ms}ms</span>
+      </div>
+      <div class="response-body">${bodyHtml}</div>
+    `;
+  }
 
-    function buscarUsuario(){
-      fetch(API+"/users/"+u_id.value).then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
-    }
+  // ── Main Send ──
+  async function sendRequest(method, path, body, cardId) {
+    const base = document.getElementById('baseUrl').value.replace(/\/$/, '');
+    const url = base + path;
+    const card = document.getElementById(cardId);
+    const btn = card.querySelector('.btn-send');
 
-    function listarUsuarios(){
-      fetch(API+"/users").then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
-    }
+    btn.classList.add('loading');
+    btn.disabled = true;
 
-    function deletarUsuario(){
-      fetch(API+"/users/"+u_id.value,{method:"DELETE"}).then(()=>mostrar("resUsuarios","Deletado"));
-    }
-
-    function atualizarUsuario(){
-      fetch(API+"/users/"+u_id.value,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          name:u_nome.value,
-          email:u_email.value,
-          phone:u_tel.value,
-          password:u_senha.value
-        })
-      }).then(r=>r.json()).then(d=>mostrar("resUsuarios",d));
-    }
-
-    /* ================= PRODUTOS ================= */
-
-    function renderProdutos(){
-      const a = acaoProdutos.value;
-      const d = formProdutos;
-
-      if(a==="buscar"){
-        d.innerHTML = `
-          <input id="p_id" placeholder="ID">
-          <button class="action" onclick="buscarProduto()">Buscar</button>
-        `;
+    const start = Date.now();
+    try {
+      const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+      };
+      if (body && method !== 'GET' && method !== 'DELETE') {
+        opts.body = JSON.stringify(body);
       }
 
-      if(a==="listar"){
-        d.innerHTML = `<button class="action" onclick="listarProdutos()">Listar</button>`;
-      }
+      const res = await fetch(url, opts);
+      const ms = Date.now() - start;
+      let text = await res.text();
+      renderResponse(cardId, res.status, text, ms);
 
-      if(a==="criar"){
-        d.innerHTML = `
-          <input id="p_nome" placeholder="Nome">
-          <input id="p_desc" placeholder="Descrição">
-          <input id="p_preco" placeholder="Preço">
-          <button class="action" onclick="criarProduto()">Criar</button>
-        `;
-      }
-
-      if(a==="atualizar"){
-        d.innerHTML = `
-          <input id="p_id" placeholder="ID">
-          <input id="p_nome" placeholder="Nome">
-          <input id="p_desc" placeholder="Descrição">
-          <input id="p_preco" placeholder="Preço">
-          <button class="action" onclick="atualizarProduto()">Atualizar</button>
-        `;
-      }
-
-      if(a==="deletar"){
-        d.innerHTML = `
-          <input id="p_id" placeholder="ID">
-          <button class="action" onclick="deletarProduto()">Deletar</button>
-        `;
-      }
+      const emoji = res.ok ? '✅' : '⚠️';
+      showToast(`${emoji} ${method} ${path} → ${res.status}`);
+    } catch (err) {
+      const ms = Date.now() - start;
+      renderResponse(cardId, 0, `Erro ao conectar:\n${err.message}\n\nVerifique se a API está rodando em:\n${url}`, ms);
+      showToast(`❌ Falha na conexão com ${base}`);
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
     }
-
-    /* PRODUTOS API */
-    function criarProduto(){
-      fetch(API+"/products",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        name:p_nome.value,
-        description:p_desc.value,
-        price:Number(p_preco.value)
-      })}).then(r=>r.json()).then(d=>mostrar("resProdutos",d));
-    }
-
-    function buscarProduto(){
-      fetch(API+"/products/"+p_id.value).then(r=>r.json()).then(d=>mostrar("resProdutos",d));
-    }
-
-    function listarProdutos(){
-      fetch(API+"/products").then(r=>r.json()).then(d=>mostrar("resProdutos",d));
-    }
-
-    function deletarProduto(){
-      fetch(API+"/products/"+p_id.value,{method:"DELETE"}).then(()=>mostrar("resProdutos","Deletado"));
-    }
-
-    function atualizarProduto(){
-      fetch(API+"/products/"+p_id.value,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          name:p_nome.value,
-          description:p_desc.value,
-          price:Number(p_preco.value)
-        })
-      }).then(r=>r.json()).then(d=>mostrar("resProdutos",d));
-    }
-
-    /* ================= CATEGORIAS ================= */
-
-    function renderCategorias(){
-      const a = acaoCategorias.value;
-      const d = formCategorias;
-
-      if(a==="buscar"){
-        d.innerHTML = `
-          <input id="c_id" placeholder="ID">
-          <button class="action" onclick="buscarCategoria()">Buscar</button>
-        `;
-      }
-
-      if(a==="listar"){
-        d.innerHTML = `<button class="action" onclick="listarCategorias()">Listar</button>`;
-      }
-
-      if(a==="criar"){
-        d.innerHTML = `
-          <input id="c_nome" placeholder="Nome">
-          <button class="action" onclick="criarCategoria()">Criar</button>
-        `;
-      }
-
-      if(a==="atualizar"){
-        d.innerHTML = `
-          <input id="c_id" placeholder="ID">
-          <input id="c_nome" placeholder="Nome">
-          <button class="action" onclick="atualizarCategoria()">Atualizar</button>
-        `;
-      }
-
-      if(a==="deletar"){
-        d.innerHTML = `
-          <input id="c_id" placeholder="ID">
-          <button class="action" onclick="deletarCategoria()">Deletar</button>
-        `;
-      }
-    }
-
-    /* CATEGORIAS API */
-    function criarCategoria(){
-      fetch(API+"/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        name:c_nome.value
-      })}).then(r=>r.json()).then(d=>mostrar("resCategorias",d));
-    }
-
-    function buscarCategoria(){
-      fetch(API+"/categories/"+c_id.value).then(r=>r.json()).then(d=>mostrar("resCategorias",d));
-    }
-
-    function listarCategorias(){
-      fetch(API+"/categories").then(r=>r.json()).then(d=>mostrar("resCategorias",d));
-    }
-
-    function deletarCategoria(){
-      fetch(API+"/categories/"+c_id.value,{method:"DELETE"}).then(()=>mostrar("resCategorias","Deletado"));
-    }
-
-    function atualizarCategoria(){
-      fetch(API+"/categories/"+c_id.value,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          name:c_nome.value
-        })
-      }).then(r=>r.json()).then(d=>mostrar("resCategorias",d));
-    }
-
-    /* ================= PEDIDOS ================= */
-
-    function renderPedidos(){
-      const a = acaoPedidos.value;
-      const d = formPedidos;
-
-      if(a==="buscar"){
-        d.innerHTML = `
-          <input id="o_id" placeholder="ID">
-          <button class="action" onclick="buscarPedido()">Buscar</button>
-        `;
-      }
-
-      if(a==="listar"){
-        d.innerHTML = `<button class="action" onclick="listarPedidos()">Listar</button>`;
-      }
-
-      if(a==="criar"){
-        d.innerHTML = `
-          <input id="o_cliente" placeholder="ID cliente">
-          <input id="o_status" placeholder="Status">
-          <input id="o_data" placeholder="Data">
-          <button class="action" onclick="criarPedido()">Criar</button>
-        `;
-      }
-
-      if(a==="atualizar"){
-        d.innerHTML = `
-          <input id="o_id" placeholder="ID">
-          <input id="o_status" placeholder="Status">
-          <button class="action" onclick="atualizarPedido()">Atualizar</button>
-        `;
-      }
-
-      if(a==="deletar"){
-        d.innerHTML = `
-          <input id="o_id" placeholder="ID">
-          <button class="action" onclick="deletarPedido()">Deletar</button>
-        `;
-      }
-    }
-
-    /* PEDIDOS API */
-    function criarPedido(){
-      fetch(API+"/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        client:{id:Number(o_cliente.value)},
-        orderStatus:Number(o_status.value),
-        moment:o_data.value
-      })}).then(r=>r.json()).then(d=>mostrar("resPedidos",d));
-    }
-
-    function buscarPedido(){
-      fetch(API+"/orders/"+o_id.value).then(r=>r.json()).then(d=>mostrar("resPedidos",d));
-    }
-
-    function listarPedidos(){
-      fetch(API+"/orders").then(r=>r.json()).then(d=>mostrar("resPedidos",d));
-    }
-
-    function deletarPedido(){
-      fetch(API+"/orders/"+o_id.value,{method:"DELETE"}).then(()=>mostrar("resPedidos","Deletado"));
-    }
-
-    function atualizarPedido(){
-      fetch(API+"/orders/"+o_id.value,{
-        method:"PUT",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          orderStatus:Number(o_status.value),
-          client:{id:Number(o_cliente.value)},
-          moment:o_data.value
-        })
-      }).then(r=>r.json()).then(d=>mostrar("resPedidos",d));
-    }
-
-    /* INIT */
-    renderUsuarios();
-    renderProdutos();
-    renderCategorias();
-    renderPedidos();
-
+  }
 </script>
-
 </body>
 </html>
