@@ -2,351 +2,158 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Order System Admin</title>
+  <title>CRUD Test Panel</title>
 
   <style>
     body {
-      margin: 0;
-      font-family: Arial;
-      display: flex;
-      background: #0f172a;
-      color: white;
+        margin: 0;
+        font-family: Arial;
+        display: flex;
+        height: 100vh;
     }
 
-    /* SIDEBAR */
-    .sidebar {
-      width: 240px;
-      background: #111827;
-      height: 100vh;
-      padding: 20px;
+    /* MENU LATERAL */
+    #menu {
+        width: 220px;
+        background: #1f1f1f;
+        color: white;
+        padding: 10px;
     }
 
-    .sidebar h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
+    button {
+        width: 100%;
+        margin: 5px 0;
+        padding: 10px;
+        cursor: pointer;
     }
 
-    .sidebar button {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 0;
-      cursor: pointer;
-      background: #1f2937;
-      color: white;
-      text-align: left;
+    /* ÁREA PRINCIPAL */
+    #content {
+        flex: 1;
+        padding: 20px;
     }
 
-    .sidebar button:hover {
-      background: #374151;
+    .section {
+        display: none;
     }
 
-    /* MAIN */
-    .main {
-      flex: 1;
-      padding: 20px;
+    .active {
+        display: block;
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 8px;
     }
-
-    .card {
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    input {
-      width: 100%;
-      margin: 5px 0;
-      padding: 8px;
-      border: none;
-      border-radius: 5px;
-    }
-
-    button.action {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 0;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    pre {
-      background: black;
-      padding: 10px;
-      overflow: auto;
-    }
-    .hidden { display:none; }
   </style>
 </head>
 
 <body>
 
-<div class="sidebar">
-  <h2>ADMIN PANEL</h2>
+<div id="menu">
+  <h3>CRUD PANEL</h3>
 
-  <button onclick="show('users')">Users</button>
-  <button onclick="show('products')">Products</button>
-  <button onclick="show('orders')">Orders</button>
-  <button onclick="show('categories')">Categories</button>
+  <button onclick="openSection('users')">Users</button>
+  <button onclick="openSection('products')">Products</button>
+  <button onclick="openSection('orders')">Orders</button>
+  <button onclick="openSection('categories')">Categories</button>
 </div>
 
-<div class="main">
+<div id="content">
 
   <!-- USERS -->
-  <div id="users" class="card">
-    <h3>Users</h3>
+  <div id="users" class="section">
+    <h2>Users</h2>
 
-    <input id="u_id" placeholder="ID">
-    <input id="u_name" placeholder="Name">
-    <input id="u_email" placeholder="Email">
+    <button onclick="showForm('users','getById')">Buscar por ID</button>
+    <button onclick="showForm('users','getAll')">Buscar todos</button>
+    <button onclick="showForm('users','insert')">Inserir</button>
+    <button onclick="showForm('users','update')">Atualizar</button>
+    <button onclick="showForm('users','delete')">Deletar</button>
 
-    <button class="action" onclick="getUser()">GET by ID</button>
-    <button class="action" onclick="getUsers()">GET ALL</button>
-    <button class="action" onclick="createUser()">INSERT</button>
-    <button class="action" onclick="updateUser()">UPDATE</button>
-    <button class="action" onclick="deleteUser()">DELETE</button>
-
-    <pre id="userOut"></pre>
+    <div id="users-form"></div>
   </div>
 
   <!-- PRODUCTS -->
-  <div id="products" class="card hidden">
-    <h3>Products</h3>
+  <div id="products" class="section">
+    <h2>Products</h2>
 
-    <input id="p_id">
-    <input id="p_name">
-    <input id="p_price">
+    <button onclick="showForm('products','getById')">Buscar por ID</button>
+    <button onclick="showForm('products','getAll')">Buscar todos</button>
+    <button onclick="showForm('products','insert')">Inserir</button>
+    <button onclick="showForm('products','update')">Atualizar</button>
+    <button onclick="showForm('products','delete')">Deletar</button>
 
-    <button class="action" onclick="getProduct()">GET by ID</button>
-    <button class="action" onclick="getProducts()">GET ALL</button>
-    <button class="action" onclick="createProduct()">INSERT</button>
-    <button class="action" onclick="updateProduct()">UPDATE</button>
-    <button class="action" onclick="deleteProduct()">DELETE</button>
-
-    <pre id="productOut"></pre>
+    <div id="products-form"></div>
   </div>
 
   <!-- ORDERS -->
-  <div id="orders" class="card hidden">
-    <h3>Orders</h3>
+  <div id="orders" class="section">
+    <h2>Orders</h2>
 
-    <input id="o_id">
-    <input id="o_userId">
-    <input id="o_productId">
-    <input id="o_qty">
-    <input id="o_price">
+    <button onclick="showForm('orders','getById')">Buscar por ID</button>
+    <button onclick="showForm('orders','getAll')">Buscar todos</button>
+    <button onclick="showForm('orders','insert')">Inserir</button>
+    <button onclick="showForm('orders','update')">Atualizar</button>
+    <button onclick="showForm('orders','delete')">Deletar</button>
 
-    <button class="action" onclick="getOrder()">GET by ID</button>
-    <button class="action" onclick="getOrders()">GET ALL</button>
-    <button class="action" onclick="createOrder()">INSERT</button>
-    <button class="action" onclick="updateOrder()">UPDATE</button>
-    <button class="action" onclick="deleteOrder()">DELETE</button>
-
-    <pre id="orderOut"></pre>
+    <div id="orders-form"></div>
   </div>
 
   <!-- CATEGORIES -->
-  <div id="categories" class="card hidden">
-    <h3>Categories</h3>
+  <div id="categories" class="section">
+    <h2>Categories</h2>
 
-    <input id="c_id">
-    <input id="c_name">
+    <button onclick="showForm('categories','getById')">Buscar por ID</button>
+    <button onclick="showForm('categories','getAll')">Buscar todos</button>
+    <button onclick="showForm('categories','insert')">Inserir</button>
+    <button onclick="showForm('categories','update')">Atualizar</button>
+    <button onclick="showForm('categories','delete')">Deletar</button>
 
-    <button class="action" onclick="getCategory()">GET by ID</button>
-    <button class="action" onclick="getCategories()">GET ALL</button>
-    <button class="action" onclick="createCategory()">INSERT</button>
-    <button class="action" onclick="updateCategory()">UPDATE</button>
-    <button class="action" onclick="deleteCategory()">DELETE</button>
-
-    <pre id="categoryOut"></pre>
+    <div id="categories-form"></div>
   </div>
 
 </div>
 
 <script>
-
-  const API = "https://order-management-production-20f1.up.railway.app";
-
-  function show(id){
-    document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
+  function openSection(id){
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
   }
 
-  /* ================= USERS ================= */
-  function getUser(){
-  fetch(`${API}/users/${u_id.value}`)
-  .then(r=>r.json()).then(d=>userOut(d));
+  /* MOSTRA FORM DINÂMICO */
+  function showForm(entity, action){
+      const container = document.getElementById(entity + "-form");
+
+      let html = `<h3>${action}</h3>`;
+
+      if(action === "getById" || action === "delete") {
+          html += `
+              <input placeholder="ID"><br><br>
+              <button>Executar</button>
+          `;
+      }
+
+      if(action === "getAll") {
+          html += `<button>Executar GET ALL</button>`;
+      }
+
+      if(action === "insert") {
+          html += `
+              <input placeholder="Nome"><br><br>
+              <input placeholder="Email / Nome produto / etc"><br><br>
+              <button>Inserir</button>
+          `;
+      }
+
+      if(action === "update") {
+          html += `
+              <input placeholder="ID"><br><br>
+              <input placeholder="Novo valor"><br><br>
+              <button>Atualizar</button>
+          `;
+      }
+
+      container.innerHTML = html;
   }
-
-  function getUsers(){
-  fetch(`${API}/users`)
-  .then(r=>r.json()).then(d=>userOut(d));
-  }
-
-  function createUser(){
-  fetch(`${API}/users`,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-  name:u_name.value,
-  email:u_email.value
-  })
-  }).then(r=>r.json()).then(d=>userOut(d));
-  }
-
-  function updateUser(){
-  fetch(`${API}/users/${u_id.value}`,{
-  method:"PUT",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-  name:u_name.value,
-  email:u_email.value
-  })
-  }).then(r=>r.json()).then(d=>userOut(d));
-  }
-
-  function deleteUser(){
-  fetch(`${API}/users/${u_id.value}`,{method:"DELETE"})
-  .then(()=>userOut("deleted"));
-  }
-
-  function userOut(d){
-  document.getElementById("userOut").innerText = JSON.stringify(d,null,2);
-  }
-
-  /* ================= PRODUCTS ================= */
-  function getProduct(){
-  fetch(`${API}/products/${p_id.value}`)
-  .then(r=>r.json()).then(d=>productOut(d));
-  }
-
-  function getProducts(){
-  fetch(`${API}/products`)
-  .then(r=>r.json()).then(d=>productOut(d));
-  }
-
-  function createProduct(){
-  fetch(`${API}/products`,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-  name:p_name.value,
-  price:Number(p_price.value)
-  })
-  }).then(r=>r.json()).then(d=>productOut(d));
-  }
-
-  function updateProduct(){
-  fetch(`${API}/products/${p_id.value}`,{
-  method:"PUT",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-  name:p_name.value,
-  price:Number(p_price.value)
-  })
-  }).then(r=>r.json()).then(d=>productOut(d));
-  }
-
-  function deleteProduct(){
-  fetch(`${API}/products/${p_id.value}`,{method:"DELETE"})
-  .then(()=>productOut("deleted"));
-  }
-
-  function productOut(d){
-  document.getElementById("productOut").innerText = JSON.stringify(d,null,2);
-  }
-
-  /* ================= ORDERS ================= */
-  function createOrder(){
-
-  const order = {
-  moment:new Date().toISOString(),
-  orderStatus:"WAITING_PAYMENT",
-  client:{id:Number(o_userId.value)},
-  items:[{
-  product:{id:Number(o_productId.value)},
-  quantity:Number(o_qty.value),
-  price:Number(o_price.value)
-  }]
-  };
-
-  fetch(`${API}/orders`,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify(order)
-  }).then(r=>r.json()).then(d=>orderOut(d));
-  }
-
-  function getOrder(){
-  fetch(`${API}/orders/${o_id.value}`)
-  .then(r=>r.json()).then(d=>orderOut(d));
-  }
-
-  function getOrders(){
-  fetch(`${API}/orders`)
-  .then(r=>r.json()).then(d=>orderOut(d));
-  }
-
-  function updateOrder(){
-  fetch(`${API}/orders/${o_id.value}`,{
-  method:"PUT",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({orderStatus:"PAID"})
-  }).then(r=>r.json()).then(d=>orderOut(d));
-  }
-
-  function deleteOrder(){
-  fetch(`${API}/orders/${o_id.value}`,{method:"DELETE"})
-  .then(()=>orderOut("deleted"));
-  }
-
-  function orderOut(d){
-  document.getElementById("orderOut").innerText = JSON.stringify(d,null,2);
-  }
-
-  /* ================= CATEGORIES ================= */
-  function getCategory(){
-  fetch(`${API}/categories/${c_id.value}`)
-  .then(r=>r.json()).then(d=>categoryOut(d));
-  }
-
-  function getCategories(){
-  fetch(`${API}/categories`)
-  .then(r=>r.json()).then(d=>categoryOut(d));
-  }
-
-  function createCategory(){
-  fetch(`${API}/categories`,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-  name:c_name.value
-  })
-  }).then(r=>r.json()).then(d=>categoryOut(d));
-  }
-
-  function updateCategory(){
-  fetch(`${API}/categories/${c_id.value}`,{
-  method:"PUT",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-  name:c_name.value
-  })
-  }).then(r=>r.json()).then(d=>categoryOut(d));
-  }
-
-  function deleteCategory(){
-  fetch(`${API}/categories/${c_id.value}`,{method:"DELETE"})
-  .then(()=>categoryOut("deleted"));
-  }
-
-  function categoryOut(d){
-  document.getElementById("categoryOut").innerText = JSON.stringify(d,null,2);
-  }
-
 </script>
 
 </body>
