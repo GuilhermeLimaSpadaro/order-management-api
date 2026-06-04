@@ -2,158 +2,216 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>CRUD Test Panel</title>
+  <title>API Dashboard</title>
 
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial;
+    }
+
     body {
-        margin: 0;
-        font-family: Arial;
-        display: flex;
-        height: 100vh;
+      display: flex;
+      height: 100vh;
+      background: #f4f6f9;
     }
 
-    /* MENU LATERAL */
-    #menu {
-        width: 220px;
-        background: #1f1f1f;
-        color: white;
-        padding: 10px;
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: #111827;
+      color: white;
+      padding: 20px;
     }
 
-    button {
-        width: 100%;
-        margin: 5px 0;
-        padding: 10px;
-        cursor: pointer;
+    .sidebar h2 {
+      margin-bottom: 20px;
+      font-size: 18px;
     }
 
-    /* ÁREA PRINCIPAL */
-    #content {
-        flex: 1;
-        padding: 20px;
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #1f2937;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .sidebar button:hover {
+      background: #374151;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      max-width: 600px;
+    }
+
+    /* INPUTS */
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+
+    button.action {
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button.action:hover {
+      background: #1d4ed8;
     }
 
     .section {
-        display: none;
+      display: none;
     }
 
     .active {
-        display: block;
-        background: #f4f4f4;
-        padding: 15px;
-        border-radius: 8px;
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 
 <body>
 
-<div id="menu">
-  <h3>CRUD PANEL</h3>
-
-  <button onclick="openSection('users')">Users</button>
-  <button onclick="openSection('products')">Products</button>
-  <button onclick="openSection('orders')">Orders</button>
-  <button onclick="openSection('categories')">Categories</button>
+<div class="sidebar">
+  <h2>API TEST</h2>
+  <button onclick="show('product')">Product</button>
+  <button onclick="show('category')">Category</button>
 </div>
 
-<div id="content">
+<div class="main">
 
-  <!-- USERS -->
-  <div id="users" class="section">
-    <h2>Users</h2>
+  <!-- PRODUCT -->
+  <div id="product" class="section active">
+    <div class="card">
+      <h2>Create Product</h2>
 
-    <button onclick="showForm('users','getById')">Buscar por ID</button>
-    <button onclick="showForm('users','getAll')">Buscar todos</button>
-    <button onclick="showForm('users','insert')">Inserir</button>
-    <button onclick="showForm('users','update')">Atualizar</button>
-    <button onclick="showForm('users','delete')">Deletar</button>
+      <input id="p_name" placeholder="Name">
+      <input id="p_desc" placeholder="Description">
+      <input id="p_price" placeholder="Price">
 
-    <div id="users-form"></div>
+      <h4>Categories</h4>
+      <div id="cat_box"></div>
+
+      <button class="action" onclick="createProduct()">Create Product</button>
+    </div>
   </div>
 
-  <!-- PRODUCTS -->
-  <div id="products" class="section">
-    <h2>Products</h2>
+  <!-- CATEGORY -->
+  <div id="category" class="section">
+    <div class="card">
+      <h2>Create Category</h2>
 
-    <button onclick="showForm('products','getById')">Buscar por ID</button>
-    <button onclick="showForm('products','getAll')">Buscar todos</button>
-    <button onclick="showForm('products','insert')">Inserir</button>
-    <button onclick="showForm('products','update')">Atualizar</button>
-    <button onclick="showForm('products','delete')">Deletar</button>
+      <input id="c_name" placeholder="Category name">
 
-    <div id="products-form"></div>
-  </div>
-
-  <!-- ORDERS -->
-  <div id="orders" class="section">
-    <h2>Orders</h2>
-
-    <button onclick="showForm('orders','getById')">Buscar por ID</button>
-    <button onclick="showForm('orders','getAll')">Buscar todos</button>
-    <button onclick="showForm('orders','insert')">Inserir</button>
-    <button onclick="showForm('orders','update')">Atualizar</button>
-    <button onclick="showForm('orders','delete')">Deletar</button>
-
-    <div id="orders-form"></div>
-  </div>
-
-  <!-- CATEGORIES -->
-  <div id="categories" class="section">
-    <h2>Categories</h2>
-
-    <button onclick="showForm('categories','getById')">Buscar por ID</button>
-    <button onclick="showForm('categories','getAll')">Buscar todos</button>
-    <button onclick="showForm('categories','insert')">Inserir</button>
-    <button onclick="showForm('categories','update')">Atualizar</button>
-    <button onclick="showForm('categories','delete')">Deletar</button>
-
-    <div id="categories-form"></div>
+      <button class="action" onclick="createCategory()">Create Category</button>
+    </div>
   </div>
 
 </div>
 
 <script>
-  function openSection(id){
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
+
+  const API = "http://localhost:8080"; // troca aqui
+
+  const categoriesMock = [
+    { id: 1, name: "Food" },
+    { id: 2, name: "Drinks" },
+    { id: 3, name: "Fast Food" }
+  ];
+
+  function show(section) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(section).classList.add('active');
   }
 
-  /* MOSTRA FORM DINÂMICO */
-  function showForm(entity, action){
-      const container = document.getElementById(entity + "-form");
+  /* LOAD CATEGORIES */
+  function loadCategories() {
+    const box = document.getElementById("cat_box");
+    box.innerHTML = "";
 
-      let html = `<h3>${action}</h3>`;
-
-      if(action === "getById" || action === "delete") {
-          html += `
-              <input placeholder="ID"><br><br>
-              <button>Executar</button>
-          `;
-      }
-
-      if(action === "getAll") {
-          html += `<button>Executar GET ALL</button>`;
-      }
-
-      if(action === "insert") {
-          html += `
-              <input placeholder="Nome"><br><br>
-              <input placeholder="Email / Nome produto / etc"><br><br>
-              <button>Inserir</button>
-          `;
-      }
-
-      if(action === "update") {
-          html += `
-              <input placeholder="ID"><br><br>
-              <input placeholder="Novo valor"><br><br>
-              <button>Atualizar</button>
-          `;
-      }
-
-      container.innerHTML = html;
+    categoriesMock.forEach(c => {
+      box.innerHTML += `
+        <label>
+          <input type="checkbox" value="${c.id}">
+          ${c.name}
+        </label>
+      `;
+    });
   }
+
+  loadCategories();
+
+  /* CREATE PRODUCT */
+  function createProduct() {
+
+    const name = document.getElementById("p_name").value;
+    const description = document.getElementById("p_desc").value;
+    const price = document.getElementById("p_price").value;
+
+    const categories = Array.from(
+      document.querySelectorAll("#cat_box input:checked")
+    ).map(c => ({ id: Number(c.value) }));
+
+    const payload = {
+      name,
+      description,
+      price: Number(price),
+      categories
+    };
+
+    fetch(API + "/products", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(d => alert("Product created"))
+    .catch(e => alert("Error"));
+  }
+
+  /* CREATE CATEGORY */
+  function createCategory() {
+
+    const name = document.getElementById("c_name").value;
+
+    fetch(API + "/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    })
+    .then(r => r.json())
+    .then(d => alert("Category created"))
+    .catch(e => alert("Error"));
+  }
+
 </script>
 
 </body>
