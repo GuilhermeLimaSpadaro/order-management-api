@@ -2,42 +2,32 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Painel API</title>
+    <title>API Debug Tester</title>
 
     <style>
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          font-family: Arial;
-        }
-
         body {
+          margin: 0;
+          font-family: Arial;
           display: flex;
-          height: 100vh;
-          background: #f4f6f9;
+          background: #0b1220;
+          color: white;
         }
 
         .sidebar {
-          width: 220px;
+          width: 260px;
           background: #111827;
-          color: white;
+          height: 100vh;
           padding: 20px;
-        }
-
-        .sidebar h2 {
-          margin-bottom: 20px;
         }
 
         .sidebar button {
           width: 100%;
-          padding: 10px;
           margin-bottom: 10px;
-          background: #1f2937;
-          border: none;
-          color: white;
+          padding: 10px;
+          border: 0;
           cursor: pointer;
-          border-radius: 6px;
+          background: #1f2937;
+          color: white;
         }
 
         .sidebar button:hover {
@@ -50,280 +40,347 @@
         }
 
         .card {
-          background: white;
-          padding: 20px;
-          border-radius: 10px;
-          max-width: 700px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+          background: #111827;
+          padding: 15px;
+          margin-bottom: 15px;
+          border-radius: 8px;
+          border: 1px solid #374151;
         }
 
         input {
           width: 100%;
-          padding: 10px;
-          margin-bottom: 10px;
-          border-radius: 6px;
-          border: 1px solid #ddd;
+          padding: 8px;
+          margin: 5px 0;
         }
 
         button.action {
           width: 100%;
           padding: 10px;
+          margin-top: 5px;
+          border: 0;
+          cursor: pointer;
           background: #2563eb;
           color: white;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
         }
 
-        .section { display: none; }
-        .active { display: block; }
+        pre {
+          background: black;
+          padding: 10px;
+          overflow: auto;
+          color: #22c55e;
+        }
 
-        label { display:block; margin-bottom:5px; }
+        .status {
+          font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-    <h2>PAINEL API</h2>
+    <h3>API DEBUG</h3>
 
-    <button onclick="abrir('produto')">Produto</button>
-    <button onclick="abrir('categoria')">Categoria</button>
-    <button onclick="abrir('usuario')">Usuário</button>
-    <button onclick="abrir('pedido')">Pedido</button>
+    <button onclick="show('users')">Users</button>
+    <button onclick="show('products')">Products</button>
+    <button onclick="show('categories')">Categories</button>
+    <button onclick="show('orders')">Orders</button>
 </div>
 
 <div class="main">
 
-    <!-- PRODUTO -->
-    <div id="produto" class="section active">
-        <div class="card">
+    <!-- USERS -->
+    <div id="users" class="card">
+        <h3>USERS</h3>
 
-            <h2>Produto</h2>
+        <input id="u_id" placeholder="ID">
+        <input id="u_name" placeholder="Name">
+        <input id="u_email" placeholder="Email">
 
-            <select onchange="renderProduto()" id="acaoProduto">
-                <option value="buscar">Buscar</option>
-                <option value="criar">Criar</option>
-                <option value="deletar">Deletar</option>
-            </select>
+        <button class="action" onclick="getUser()">GET BY ID</button>
+        <button class="action" onclick="getUsers()">GET ALL</button>
+        <button class="action" onclick="createUser()">POST</button>
+        <button class="action" onclick="updateUser()">PUT</button>
+        <button class="action" onclick="deleteUser()">DELETE</button>
 
-            <div id="formProduto"></div>
-
-        </div>
+        <pre id="userOut"></pre>
     </div>
 
-    <!-- CATEGORIA -->
-    <div id="categoria" class="section">
-        <div class="card">
+    <!-- PRODUCTS -->
+    <div id="products" class="card" style="display:none">
+        <h3>PRODUCTS</h3>
 
-            <h2>Categoria</h2>
+        <input id="p_id">
+        <input id="p_name">
+        <input id="p_price">
 
-            <select onchange="renderCategoria()" id="acaoCategoria">
-                <option value="buscar">Buscar</option>
-                <option value="criar">Criar</option>
-                <option value="deletar">Deletar</option>
-            </select>
+        <button class="action" onclick="getProduct()">GET BY ID</button>
+        <button class="action" onclick="getProducts()">GET ALL</button>
+        <button class="action" onclick="createProduct()">POST</button>
+        <button class="action" onclick="updateProduct()">PUT</button>
+        <button class="action" onclick="deleteProduct()">DELETE</button>
 
-            <div id="formCategoria"></div>
-
-        </div>
+        <pre id="productOut"></pre>
     </div>
 
-    <!-- USUÁRIO -->
-    <div id="usuario" class="section">
-        <div class="card">
+    <!-- CATEGORIES -->
+    <div id="categories" class="card" style="display:none">
+        <h3>CATEGORIES</h3>
 
-            <h2>Usuário</h2>
+        <input id="c_id">
+        <input id="c_name">
 
-            <select onchange="renderUsuario()" id="acaoUsuario">
-                <option value="buscar">Buscar</option>
-                <option value="criar">Criar</option>
-                <option value="deletar">Deletar</option>
-            </select>
+        <button class="action" onclick="getCategory()">GET BY ID</button>
+        <button class="action" onclick="getCategories()">GET ALL</button>
+        <button class="action" onclick="createCategory()">POST</button>
+        <button class="action" onclick="updateCategory()">PUT</button>
+        <button class="action" onclick="deleteCategory()">DELETE</button>
 
-            <div id="formUsuario"></div>
-
-        </div>
+        <pre id="categoryOut"></pre>
     </div>
 
-    <!-- PEDIDO -->
-    <div id="pedido" class="section">
-        <div class="card">
+    <!-- ORDERS -->
+    <div id="orders" class="card" style="display:none">
+        <h3>ORDERS</h3>
 
-            <h2>Pedido</h2>
+        <input id="o_id">
+        <input id="o_userId">
+        <input id="o_productId">
+        <input id="o_qty">
+        <input id="o_price">
 
-            <select onchange="renderPedido()" id="acaoPedido">
-                <option value="buscar">Buscar</option>
-                <option value="criar">Criar</option>
-                <option value="deletar">Deletar</option>
-            </select>
+        <button class="action" onclick="createOrder()">POST</button>
+        <button class="action" onclick="getOrder()">GET BY ID</button>
+        <button class="action" onclick="getOrders()">GET ALL</button>
+        <button class="action" onclick="updateOrder()">PUT</button>
+        <button class="action" onclick="deleteOrder()">DELETE</button>
 
-            <div id="formPedido"></div>
-
-        </div>
+        <pre id="orderOut"></pre>
     </div>
 
 </div>
 
 <script>
 
-    const API = "http://localhost:8080";
+    const API = "https://order-management-production-20f1.up.railway.app";
 
-    /* MENU */
-    function abrir(sec) {
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.getElementById(sec).classList.add('active');
+    function show(id){
+      document.querySelectorAll('.card').forEach(c => c.style.display='none');
+      document.getElementById(id).style.display='block';
     }
 
-    /* ================= PRODUTO ================= */
+    /* ================== FETCH DEBUG ================== */
+    async function request(url, options){
+      try {
+        const res = await fetch(url, options);
+        const text = await res.text();
 
-    function renderProduto() {
-      const a = document.getElementById("acaoProduto").value;
-      const d = document.getElementById("formProduto");
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = text;
+        }
 
-      if (a === "buscar") {
-        d.innerHTML = `<input id="idProduto" placeholder="ID"><button class="action" onclick="buscarProduto()">Buscar</button>`;
-      }
+        return {
+          status: res.status,
+          ok: res.ok,
+          data
+        };
 
-      if (a === "criar") {
-        d.innerHTML = `
-          <input id="p_nome" placeholder="Nome">
-          <input id="p_desc" placeholder="Descrição">
-          <input id="p_preco" placeholder="Preço">
-          <button class="action" onclick="criarProduto()">Criar</button>
-        `;
-      }
-
-      if (a === "deletar") {
-        d.innerHTML = `<input id="idProdutoDel" placeholder="ID"><button class="action" onclick="deletarProduto()">Deletar</button>`;
-      }
-    }
-
-    /* ================= CATEGORIA ================= */
-
-    function renderCategoria() {
-      const a = document.getElementById("acaoCategoria").value;
-      const d = document.getElementById("formCategoria");
-
-      if (a === "buscar") {
-        d.innerHTML = `<input id="idCategoria" placeholder="ID"><button class="action" onclick="buscarCategoria()">Buscar</button>`;
-      }
-
-      if (a === "criar") {
-        d.innerHTML = `
-          <input id="c_nome" placeholder="Nome categoria">
-          <button class="action" onclick="criarCategoria()">Criar</button>
-        `;
-      }
-
-      if (a === "deletar") {
-        d.innerHTML = `<input id="idCategoriaDel" placeholder="ID"><button class="action" onclick="deletarCategoria()">Deletar</button>`;
+      } catch (err) {
+        return {
+          status: 0,
+          ok: false,
+          data: "NETWORK ERROR: " + err.message
+        };
       }
     }
 
-    /* ================= USUÁRIO ================= */
-
-    function renderUsuario() {
-      const a = document.getElementById("acaoUsuario").value;
-      const d = document.getElementById("formUsuario");
-
-      if (a === "buscar") {
-        d.innerHTML = `<input id="idUsuario" placeholder="ID"><button class="action" onclick="buscarUsuario()">Buscar</button>`;
-      }
-
-      if (a === "criar") {
-        d.innerHTML = `
-          <input id="u_nome" placeholder="Nome">
-          <input id="u_email" placeholder="Email">
-          <input id="u_phone" placeholder="Telefone">
-          <input id="u_pass" placeholder="Senha">
-          <button class="action" onclick="criarUsuario()">Criar</button>
-        `;
-      }
-
-      if (a === "deletar") {
-        d.innerHTML = `<input id="idUsuarioDel" placeholder="ID"><button class="action" onclick="deletarUsuario()">Deletar</button>`;
-      }
+    /* ================= USERS ================= */
+    async function getUser(){
+    const r = await request(`${API}/users/${u_id.value}`);
+    userOut(r);
     }
 
-    /* ================= PEDIDO ================= */
-
-    function renderPedido() {
-      const a = document.getElementById("acaoPedido").value;
-      const d = document.getElementById("formPedido");
-
-      if (a === "buscar") {
-        d.innerHTML = `<input id="idPedido" placeholder="ID"><button class="action" onclick="buscarPedido()">Buscar</button>`;
-      }
-
-      if (a === "criar") {
-        d.innerHTML = `
-          <input id="p_client" placeholder="ID do usuário (cliente)">
-          <input id="p_status" placeholder="Status (0,1,2...)">
-          <input id="p_moment" placeholder="Data (2026-06-04T20:00:00)">
-          <button class="action" onclick="criarPedido()">Criar</button>
-        `;
-      }
-
-      if (a === "deletar") {
-        d.innerHTML = `<input id="idPedidoDel" placeholder="ID"><button class="action" onclick="deletarPedido()">Deletar</button>`;
-      }
+    async function getUsers(){
+    const r = await request(`${API}/users`);
+    userOut(r);
     }
 
-    /* ================= API ================= */
-
-    // PRODUTO
-    function criarProduto(){
-      fetch(API+"/products",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        name: p_nome.value,
-        description: p_desc.value,
-        price: Number(p_preco.value)
-      })})
+    async function createUser(){
+    const r = await request(`${API}/users`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    name:u_name.value,
+    email:u_email.value
+    })
+    });
+    userOut(r);
     }
 
-    function buscarProduto(){ fetch(API+"/products/"+idProduto.value).then(r=>r.json()).then(console.log) }
-    function deletarProduto(){ fetch(API+"/products/"+idProdutoDel.value,{method:"DELETE"}) }
-
-    // CATEGORIA
-    function criarCategoria(){
-      fetch(API+"/categories",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        name: c_nome.value
-      })})
+    async function updateUser(){
+    const r = await request(`${API}/users/${u_id.value}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    name:u_name.value,
+    email:u_email.value
+    })
+    });
+    userOut(r);
     }
 
-    function buscarCategoria(){ fetch(API+"/categories/"+idCategoria.value).then(r=>r.json()).then(console.log) }
-    function deletarCategoria(){ fetch(API+"/categories/"+idCategoriaDel.value,{method:"DELETE"}) }
-
-    // USUÁRIO
-    function criarUsuario(){
-      fetch(API+"/users",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        name:u_nome.value,
-        email:u_email.value,
-        phone:u_phone.value,
-        password:u_pass.value
-      })})
+    async function deleteUser(){
+    const r = await request(`${API}/users/${u_id.value}`,{method:"DELETE"});
+    userOut(r);
     }
 
-    function buscarUsuario(){ fetch(API+"/users/"+idUsuario.value).then(r=>r.json()).then(console.log) }
-    function deletarUsuario(){ fetch(API+"/users/"+idUsuarioDel.value,{method:"DELETE"}) }
-
-    // PEDIDO
-    function criarPedido(){
-      fetch(API+"/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({
-        client:{id:Number(p_client.value)},
-        orderStatus:Number(p_status.value),
-        moment:p_moment.value
-      })})
+    function userOut(r){
+    document.getElementById("userOut").innerText =
+    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
+    JSON.stringify(r.data,null,2);
     }
 
-    function buscarPedido(){ fetch(API+"/orders/"+idPedido.value).then(r=>r.json()).then(console.log) }
-    function deletarPedido(){ fetch(API+"/orders/"+idPedidoDel.value,{method:"DELETE"}) }
+    /* ================= PRODUCTS ================= */
+    async function getProduct(){
+    const r = await request(`${API}/products/${p_id.value}`);
+    productOut(r);
+    }
 
-    /* INIT */
-    renderProduto();
-    renderCategoria();
-    renderUsuario();
-    renderPedido();
+    async function getProducts(){
+    const r = await request(`${API}/products`);
+    productOut(r);
+    }
+
+    async function createProduct(){
+    const r = await request(`${API}/products`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    name:p_name.value,
+    price:Number(p_price.value)
+    })
+    });
+    productOut(r);
+    }
+
+    async function updateProduct(){
+    const r = await request(`${API}/products/${p_id.value}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+    name:p_name.value,
+    price:Number(p_price.value)
+    })
+    });
+    productOut(r);
+    }
+
+    async function deleteProduct(){
+    const r = await request(`${API}/products/${p_id.value}`,{method:"DELETE"});
+    productOut(r);
+    }
+
+    function productOut(r){
+    document.getElementById("productOut").innerText =
+    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
+    JSON.stringify(r.data,null,2);
+    }
+
+    /* ================= CATEGORIES ================= */
+    async function getCategory(){
+    const r = await request(`${API}/categories/${c_id.value}`);
+    categoryOut(r);
+    }
+
+    async function getCategories(){
+    const r = await request(`${API}/categories`);
+    categoryOut(r);
+    }
+
+    async function createCategory(){
+    const r = await request(`${API}/categories`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name:c_name.value})
+    });
+    categoryOut(r);
+    }
+
+    async function updateCategory(){
+    const r = await request(`${API}/categories/${c_id.value}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({name:c_name.value})
+    });
+    categoryOut(r);
+    }
+
+    async function deleteCategory(){
+    const r = await request(`${API}/categories/${c_id.value}`,{method:"DELETE"});
+    categoryOut(r);
+    }
+
+    function categoryOut(r){
+    document.getElementById("categoryOut").innerText =
+    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
+    JSON.stringify(r.data,null,2);
+    }
+
+    /* ================= ORDERS ================= */
+    async function createOrder(){
+
+    const order = {
+    moment:new Date().toISOString(),
+    orderStatus:"WAITING_PAYMENT",
+    client:{id:Number(o_userId.value)},
+    items:[{
+    product:{id:Number(o_productId.value)},
+    quantity:Number(o_qty.value),
+    price:Number(o_price.value)
+    }]
+    };
+
+    const r = await request(`${API}/orders`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(order)
+    });
+
+    orderOut(r);
+    }
+
+    async function getOrder(){
+    const r = await request(`${API}/orders/${o_id.value}`);
+    orderOut(r);
+    }
+
+    async function getOrders(){
+    const r = await request(`${API}/orders`);
+    orderOut(r);
+    }
+
+    async function updateOrder(){
+    const r = await request(`${API}/orders/${o_id.value}`,{
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({orderStatus:"PAID"})
+    });
+    orderOut(r);
+    }
+
+    async function deleteOrder(){
+    const r = await request(`${API}/orders/${o_id.value}`,{method:"DELETE"});
+    orderOut(r);
+    }
+
+    function orderOut(r){
+    document.getElementById("orderOut").innerText =
+    `STATUS: ${r.status}\nOK: ${r.ok}\n\n` +
+    JSON.stringify(r.data,null,2);
+    }
 
 </script>
 
