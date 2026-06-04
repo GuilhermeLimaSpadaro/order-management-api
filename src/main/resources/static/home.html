@@ -1,138 +1,165 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<title>Order System Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Order Manager App</title>
 
-<style>
-  body {
-    margin: 0;
-    font-family: Arial;
-    display: flex;
-    background: #f4f6f8;
-  }
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      display: flex;
+      background: #f4f6f8;
+    }
 
-  /* SIDEBAR */
-  .sidebar {
-    width: 220px;
-    background: #111827;
-    color: white;
-    height: 100vh;
-    padding: 20px;
-  }
+    .sidebar {
+      width: 240px;
+      background: #111827;
+      color: white;
+      height: 100vh;
+      padding: 20px;
+    }
 
-  .sidebar h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
+    .sidebar button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border: none;
+      background: #1f2937;
+      color: white;
+      cursor: pointer;
+    }
 
-  .menu button {
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: none;
-    cursor: pointer;
-    background: #1f2937;
-    color: white;
-    text-align: left;
-  }
+    .main {
+      flex: 1;
+      padding: 20px;
+    }
 
-  .menu button:hover {
-    background: #374151;
-  }
+    .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-  /* MAIN */
-  .main {
-    flex: 1;
-    padding: 20px;
-  }
+    input {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+    }
 
-  .card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  }
+    button.action {
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
 
-  input {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0;
-  }
+    button.danger {
+      background: #dc2626;
+    }
 
-  button.action {
-    padding: 10px;
-    width: 100%;
-    border: none;
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-    margin-top: 5px;
-  }
+    pre {
+      background: #111;
+      color: #0f0;
+      padding: 10px;
+      overflow: auto;
+    }
 
-  pre {
-    background: #111;
-    color: #0f0;
-    padding: 10px;
-    overflow: auto;
-  }
-
-  .hidden { display: none; }
-</style>
+    .hidden { display: none; }
+  </style>
 </head>
 
 <body>
 
 <div class="sidebar">
-  <h2>ORDER SYSTEM</h2>
+  <h2>ORDER APP</h2>
 
-  <div class="menu">
-    <button onclick="show('users')">👤 Users</button>
-    <button onclick="show('products')">📦 Products</button>
-    <button onclick="show('orders')">🧾 Orders</button>
-    <button onclick="show('payments')">💳 Payments</button>
-  </div>
+  <button onclick="show('users')">Users</button>
+  <button onclick="show('products')">Products</button>
+  <button onclick="show('categories')">Categories</button>
+  <button onclick="show('orders')">Orders</button>
+  <button onclick="show('payments')">Payments</button>
 </div>
 
 <div class="main">
 
   <!-- USERS -->
   <div id="users" class="card">
-    <h3>Users</h3>
-    <input id="userName" placeholder="Name">
-    <button class="action" onclick="createUser()">Create User</button>
+    <h2>Users</h2>
+
+    <input id="uId" placeholder="ID">
+    <button onclick="getUser()">GET</button>
+    <button onclick="deleteUser()" class="danger">DELETE</button>
+
+    <input id="uName" placeholder="Name">
+    <button onclick="createUser()">CREATE</button>
+    <button onclick="updateUser()">UPDATE</button>
+
     <pre id="userOut"></pre>
   </div>
 
   <!-- PRODUCTS -->
   <div id="products" class="card hidden">
-    <h3>Products</h3>
-    <input id="productName" placeholder="Name">
-    <input id="productPrice" placeholder="Price">
-    <button class="action" onclick="createProduct()">Create Product</button>
+    <h2>Products</h2>
+
+    <input id="pId" placeholder="ID">
+    <button onclick="getProduct()">GET</button>
+    <button onclick="deleteProduct()" class="danger">DELETE</button>
+
+    <input id="pName" placeholder="Name">
+    <input id="pPrice" placeholder="Price">
+
+    <button onclick="createProduct()">CREATE</button>
+    <button onclick="updateProduct()">UPDATE</button>
+
     <pre id="productOut"></pre>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div id="categories" class="card hidden">
+    <h2>Categories</h2>
+
+    <input id="cId" placeholder="ID">
+    <button onclick="getCategory()">GET</button>
+    <button onclick="deleteCategory()" class="danger">DELETE</button>
+
+    <input id="cName" placeholder="Name">
+
+    <button onclick="createCategory()">CREATE</button>
+    <button onclick="updateCategory()">UPDATE</button>
+
+    <pre id="categoryOut"></pre>
   </div>
 
   <!-- ORDERS -->
   <div id="orders" class="card hidden">
-    <h3>Orders</h3>
+    <h2>Orders</h2>
 
-    <input id="orderUserId" placeholder="User ID">
-    <input id="orderProductId" placeholder="Product ID">
-    <input id="orderQty" placeholder="Quantity">
-    <input id="orderPrice" placeholder="Price">
+    <input id="oId" placeholder="Order ID">
+    <button onclick="getOrder()">GET</button>
 
-    <button class="action" onclick="createOrder()">Create Order</button>
+    <hr>
+
+    <input id="oUser" placeholder="User ID">
+    <input id="oProduct" placeholder="Product ID">
+    <input id="oQty" placeholder="Quantity">
+    <input id="oPrice" placeholder="Price">
+
+    <button onclick="createOrder()">CREATE ORDER</button>
+
     <pre id="orderOut"></pre>
   </div>
 
   <!-- PAYMENTS -->
   <div id="payments" class="card hidden">
-    <h3>Payments</h3>
+    <h2>Payments</h2>
 
-    <input id="paymentOrderId" placeholder="Order ID">
-    <button class="action" onclick="pay()">Pay Order</button>
+    <input id="payOrder" placeholder="Order ID">
+    <button onclick="payOrder()">PAY ORDER</button>
 
     <pre id="paymentOut"></pre>
   </div>
@@ -141,75 +168,141 @@
 
 <script>
 
-const API = "https://order-management-production-20f1.up.railway.app";
+  const API = "https://order-management-production-20f1.up.railway.app";
 
-function show(id) {
-  document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-}
+  function show(id) {
+    document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+  }
 
-/* USERS */
-function createUser() {
-  fetch(`${API}/users`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ name: document.getElementById("userName").value })
-  })
-  .then(r => r.json())
-  .then(d => document.getElementById("userOut").innerText = JSON.stringify(d,null,2));
-}
+  /* ========== USERS ========== */
+  function createUser() {
+    fetch(`${API}/users`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ name: uName.value })
+    }).then(r=>r.json()).then(d=>userOut.innerText=JSON.stringify(d,null,2));
+  }
 
-/* PRODUCTS */
-function createProduct() {
-  fetch(`${API}/products`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      name: document.getElementById("productName").value,
-      price: Number(document.getElementById("productPrice").value)
+  function getUser() {
+    fetch(`${API}/users/${uId.value}`)
+    .then(r=>r.json()).then(d=>userOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function updateUser() {
+    fetch(`${API}/users/${uId.value}`, {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ name: uName.value })
+    }).then(r=>r.json()).then(d=>userOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function deleteUser() {
+    fetch(`${API}/users/${uId.value}`, { method: "DELETE" })
+    .then(()=>userOut.innerText="Deleted");
+  }
+
+  /* ========== PRODUCTS ========== */
+  function createProduct() {
+    fetch(`${API}/products`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        name: pName.value,
+        price: Number(pPrice.value)
+      })
+    }).then(r=>r.json()).then(d=>productOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function getProduct() {
+    fetch(`${API}/products/${pId.value}`)
+    .then(r=>r.json()).then(d=>productOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function updateProduct() {
+    fetch(`${API}/products/${pId.value}`, {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        name: pName.value,
+        price: Number(pPrice.value)
+      })
+    }).then(r=>r.json()).then(d=>productOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function deleteProduct() {
+    fetch(`${API}/products/${pId.value}`, { method: "DELETE" })
+    .then(()=>productOut.innerText="Deleted");
+  }
+
+  /* ========== CATEGORIES ========== */
+  function createCategory() {
+    fetch(`${API}/categories`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ name: cName.value })
+    }).then(r=>r.json()).then(d=>categoryOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function getCategory() {
+    fetch(`${API}/categories/${cId.value}`)
+    .then(r=>r.json()).then(d=>categoryOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function updateCategory() {
+    fetch(`${API}/categories/${cId.value}`, {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ name: cName.value })
+    }).then(r=>r.json()).then(d=>categoryOut.innerText=JSON.stringify(d,null,2));
+  }
+
+  function deleteCategory() {
+    fetch(`${API}/categories/${cId.value}`, { method: "DELETE" })
+    .then(()=>categoryOut.innerText="Deleted");
+  }
+
+  /* ========== ORDERS ========== */
+  function createOrder() {
+
+    const order = {
+      moment: new Date().toISOString(),
+      orderStatus: "WAITING_PAYMENT",
+      client: { id: Number(oUser.value) },
+      items: [
+        {
+          product: { id: Number(oProduct.value) },
+          quantity: Number(oQty.value),
+          price: Number(oPrice.value)
+        }
+      ]
+    };
+
+    fetch(`${API}/orders`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(order)
     })
-  })
-  .then(r => r.json())
-  .then(d => document.getElementById("productOut").innerText = JSON.stringify(d,null,2));
-}
+    .then(r=>r.json())
+    .then(d=>orderOut.innerText=JSON.stringify(d,null,2));
+  }
 
-/* ORDERS */
-function createOrder() {
+  function getOrder() {
+    fetch(`${API}/orders/${oId.value}`)
+    .then(r=>r.json())
+    .then(d=>orderOut.innerText=JSON.stringify(d,null,2));
+  }
 
-  const order = {
-    moment: new Date().toISOString(),
-    orderStatus: "WAITING_PAYMENT",
-    client: { id: Number(document.getElementById("orderUserId").value) },
-    items: [
-      {
-        product: { id: Number(document.getElementById("orderProductId").value) },
-        quantity: Number(document.getElementById("orderQty").value),
-        price: Number(document.getElementById("orderPrice").value)
-      }
-    ]
-  };
-
-  fetch(`${API}/orders`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify(order)
-  })
-  .then(r => r.json())
-  .then(d => document.getElementById("orderOut").innerText = JSON.stringify(d,null,2));
-}
-
-/* PAYMENTS */
-function pay() {
-  fetch(`${API}/payments`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      orderId: Number(document.getElementById("paymentOrderId").value)
+  /* ========== PAYMENTS ========== */
+  function payOrder() {
+    fetch(`${API}/payments`, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ orderId: Number(payOrder.value) })
     })
-  })
-  .then(r => r.json())
-  .then(d => document.getElementById("paymentOut").innerText = JSON.stringify(d,null,2));
-}
+    .then(r=>r.json())
+    .then(d=>paymentOut.innerText=JSON.stringify(d,null,2));
+  }
 
 </script>
 
