@@ -2,8 +2,6 @@ package com.portfolio.ordermanagerapi.controllers;
 
 import com.portfolio.ordermanagerapi.model.Order;
 import com.portfolio.ordermanagerapi.services.OrderService;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,20 +20,20 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> insert(@RequestBody Order order){
+    public ResponseEntity<Order> insert(@RequestBody Order order) {
         order = orderService.insert(order);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(order.getId()).toUri();
         return ResponseEntity.created(uri).body(order);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         orderService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody Order order){
+    public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody Order order) {
         return ResponseEntity.ok().body(orderService.update(id, order));
     }
 

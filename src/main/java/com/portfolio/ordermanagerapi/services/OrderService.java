@@ -1,9 +1,12 @@
 package com.portfolio.ordermanagerapi.services;
 
+import com.portfolio.ordermanagerapi.exceptions.DatabaseException;
 import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import com.portfolio.ordermanagerapi.model.Order;
+import com.portfolio.ordermanagerapi.model.User;
 import com.portfolio.ordermanagerapi.repositories.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +25,12 @@ public class OrderService {
     }
 
     public void delete(Long id) {
-
         Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
-        orderRepository.delete(order);
+        try {
+            orderRepository.delete(order);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     public Order update(Long id, Order order) {

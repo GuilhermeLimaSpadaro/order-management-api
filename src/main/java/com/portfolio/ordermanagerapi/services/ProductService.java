@@ -1,9 +1,12 @@
 package com.portfolio.ordermanagerapi.services;
 
+import com.portfolio.ordermanagerapi.exceptions.DatabaseException;
 import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import com.portfolio.ordermanagerapi.model.Product;
+import com.portfolio.ordermanagerapi.model.User;
 import com.portfolio.ordermanagerapi.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +25,12 @@ public class ProductService {
     }
 
     public void delete(Long id) {
-        Product Product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
-        productRepository.delete(Product);
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        try {
+            productRepository.delete(product);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     public Product update(Long id, Product product) {

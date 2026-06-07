@@ -1,8 +1,11 @@
 package com.portfolio.ordermanagerapi.services;
 
+import com.portfolio.ordermanagerapi.exceptions.DatabaseException;
 import com.portfolio.ordermanagerapi.exceptions.ResourceNotFoundException;
 import com.portfolio.ordermanagerapi.model.Category;
+import com.portfolio.ordermanagerapi.model.Category;
 import com.portfolio.ordermanagerapi.repositories.CategoryRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +25,11 @@ public class CategoryService {
 
     public void delete(Long id) {
         Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
-        categoryRepository.delete(category);
+        try {
+            categoryRepository.delete(category);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
     }
 
     public Category update(Long id, Category category) {
