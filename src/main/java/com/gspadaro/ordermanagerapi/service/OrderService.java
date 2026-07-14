@@ -1,7 +1,6 @@
 package com.gspadaro.ordermanagerapi.service;
 
 import com.gspadaro.ordermanagerapi.domain.Order;
-import com.gspadaro.ordermanagerapi.domain.Order;
 import com.gspadaro.ordermanagerapi.exception.ResourceNotFoundException;
 import com.gspadaro.ordermanagerapi.repository.OrderRepository;
 import org.springframework.stereotype.Service;

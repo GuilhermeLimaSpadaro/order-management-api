@@ -1,7 +1,6 @@
 package com.gspadaro.ordermanagerapi.controller;
 
 import com.gspadaro.ordermanagerapi.domain.Order;
-import com.gspadaro.ordermanagerapi.domain.Order;
 import com.gspadaro.ordermanagerapi.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +37,7 @@ public class OrderController {
     public ResponseEntity<Order> update(@PathVariable Long id, @RequestBody Order order) {
         return ResponseEntity.ok().body(service.update(id, order));
     }
-    
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<Order> findById(@PathVariable Long id) {
         return ResponseEntity.ok().body(service.findById(id));

@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok().body(service.update(id, User));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<User> findUserById(@PathVariable Long id) {
         return ResponseEntity.ok().body(service.findById(id));
     }

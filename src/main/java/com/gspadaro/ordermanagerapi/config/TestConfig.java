@@ -35,6 +35,11 @@ public class TestConfig implements CommandLineRunner {
 
     @Override
     public void run(String @NonNull ... args) {
+        categoryRepository.deleteAll();
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+        orderRepository.deleteAll();
+        orderItemRepository.deleteAll();
 
         Category c1 = new Category(null, "Electronics");
         Category c2 = new Category(null, "Books");
