@@ -1,8 +1,9 @@
 package com.gspadaro.ordermanagerapi.config;
 
-import com.gspadaro.ordermanagerapi.model.*;
-import com.gspadaro.ordermanagerapi.model.enums.OrderStatus;
+import com.gspadaro.ordermanagerapi.domain.*;
+import com.gspadaro.ordermanagerapi.domain.enums.OrderStatus;
 import com.gspadaro.ordermanagerapi.repository.*;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -33,7 +34,7 @@ public class TestConfig implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String @NonNull ... args) {
 
         Category c1 = new Category(null, "Electronics");
         Category c2 = new Category(null, "Books");

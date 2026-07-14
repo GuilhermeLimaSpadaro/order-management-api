@@ -1,6 +1,6 @@
 package com.gspadaro.ordermanagerapi.repository;
 
-import com.gspadaro.ordermanagerapi.model.OrderItem;
+import com.gspadaro.ordermanagerapi.domain.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
