@@ -1,4 +1,4 @@
-package com.gspadaro.ordermanagerapi.model.enums;
+package com.gspadaro.ordermanagerapi.domain.enums;
 
 import java.util.Arrays;
 

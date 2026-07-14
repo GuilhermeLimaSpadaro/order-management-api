@@ -1,4 +1,4 @@
-package com.gspadaro.ordermanagerapi.model;
+package com.gspadaro.ordermanagerapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -1,7 +1,7 @@
-package com.gspadaro.ordermanagerapi.model;
+package com.gspadaro.ordermanagerapi.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.gspadaro.ordermanagerapi.model.enums.OrderStatus;
+import com.gspadaro.ordermanagerapi.domain.enums.OrderStatus;
 import jakarta.persistence.*;
 
 import java.io.Serial;
