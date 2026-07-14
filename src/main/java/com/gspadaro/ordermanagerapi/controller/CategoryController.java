@@ -1,32 +1,50 @@
 package com.gspadaro.ordermanagerapi.controller;
 
-import com.gspadaro.ordermanagerapi.model.Category;
+import com.gspadaro.ordermanagerapi.domain.Category;
 import com.gspadaro.ordermanagerapi.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping(value = "/categories")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private CategoryService service;
 
-        @GetMapping("/{id}")
-        public ResponseEntity<Category> findCategoryById(@PathVariable Long id) {
-            return ResponseEntity.ok().body(categoryService.findById(id));
-        }
-
-        @GetMapping
-        public ResponseEntity<List<Category>> listAll() {
-            List<Category> CategoryList = categoryService.findAll();
-
-            return ResponseEntity.ok().body(CategoryList);
-        }
+    public CategoryController(CategoryService service) {
+        this.service = service;
     }
+
+    @PostMapping
+    public ResponseEntity<Category> create(@RequestBody Category category) {
+        Category createdCategory = service.create(category);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdCategory.getId()).toUri();
+        return ResponseEntity.created(uri).body(createdCategory);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Category> update(@PathVariable Long id, @RequestBody Category category) {
+        return ResponseEntity.ok().body(service.update(id, category));
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Category> findById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(service.findById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Category>> findAll() {
+        return ResponseEntity.ok().body(service.findAll());
+    }
+}
