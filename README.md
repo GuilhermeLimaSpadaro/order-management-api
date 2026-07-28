@@ -125,9 +125,18 @@ A API estará disponível em:
 http://localhost:8080
 ```
 
-### Perfil de produção (PostgreSQL)
+---
 
-Configure as variáveis de ambiente:
+## 🌐 Perfis de Ambiente
+
+O projeto utiliza **Spring Profiles** para separar configurações de teste e produção:
+
+| Perfil       | Banco de Dados | Uso                                  |
+|--------------|-----------------|----------------------------------------|
+| `test`       | H2 (em memória) | Desenvolvimento e testes locais       |
+| `production` | PostgreSQL      | Ambiente produtivo, dados persistentes |
+
+Para rodar com o perfil de produção, configure as variáveis de ambiente:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://HOST:PORT/DATABASE
@@ -136,16 +145,6 @@ spring.datasource.password=SUA_SENHA
 
 spring.jpa.hibernate.ddl-auto=update
 ```
-
----
-
-## 🌐 Deploy
-
-Aplicação hospedada no Railway utilizando:
-
-- Spring Boot
-- PostgreSQL
-- Perfil de produção
 
 ---
 
