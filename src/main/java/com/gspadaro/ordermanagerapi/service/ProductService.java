@@ -10,23 +10,23 @@ import java.util.List;
 @Service
 public class ProductService {
 
-    private ProductRepository repository;
+    private final ProductRepository repository;
 
     public ProductService(ProductRepository repository) {
         this.repository = repository;
     }
 
-    public Product create(Product Product) {
-        return repository.save(Product);
+    public Product create(Product product) {
+        return repository.save(product);
     }
 
     public void delete(Long id) {
-        Product Product = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-        repository.delete(Product);
+        Product product = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
+        repository.delete(product);
     }
 
     public Product update(Long id, Product product) {
-        Product existingProduct = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        Product existingProduct = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
         existingProduct.setName(product.getName());
         existingProduct.setDescription(product.getDescription());
         existingProduct.setPrice(product.getPrice());
@@ -35,7 +35,7 @@ public class ProductService {
     }
 
     public Product findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
     }
 
     public List<Product> findAll() {

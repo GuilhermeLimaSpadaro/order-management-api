@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class GlobalHandlerException {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<StandardError> objectNotFound(ResourceNotFoundException e, HttpServletRequest request){
-        String error = "Object not found";
+    public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request){
+        String error = "Resource not found";
         HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError standardError = new StandardError(LocalDateTime.now(), status.value(), error, e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(standardError);

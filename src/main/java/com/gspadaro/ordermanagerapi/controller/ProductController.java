@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    private ProductService service;
+    private final ProductService service;
 
     public ProductController(ProductService service) {
         this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product ProductRequest) {
-        Product productCreated = service.create(ProductRequest);
+    public ResponseEntity<Product> create(@RequestBody Product productRequest) {
+        Product productCreated = service.create(productRequest);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(productCreated.getId()).toUri();
         return ResponseEntity.created(uri).body(productCreated);
@@ -34,8 +34,8 @@ public class ProductController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product Product) {
-        return ResponseEntity.ok().body(service.update(id, Product));
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
+        return ResponseEntity.ok().body(service.update(id, product));
     }
 
     @GetMapping("/{id}")

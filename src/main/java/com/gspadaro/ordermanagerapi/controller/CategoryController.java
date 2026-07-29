@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping(value = "/categories")
 public class CategoryController {
 
-    private CategoryService service;
+    private final CategoryService service;
 
     public CategoryController(CategoryService service) {
         this.service = service;
