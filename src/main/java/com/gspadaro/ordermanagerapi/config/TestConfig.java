@@ -73,9 +73,9 @@ public class TestConfig implements CommandLineRunner {
 
         userRepository.saveAll(List.of(u1, u2, u3));
 
-        o1.setClient(u1);
-        o2.setClient(u2);
-        o3.setClient(u3);
+        o1.setCustomer(u1);
+        o2.setCustomer(u2);
+        o3.setCustomer(u3);
 
         orderRepository.saveAll(List.of(o1, o2, o3));
 
