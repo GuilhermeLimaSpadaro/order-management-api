@@ -1,6 +1,8 @@
 package com.gspadaro.ordermanagerapi.controller;
 
 import com.gspadaro.ordermanagerapi.domain.User;
+import com.gspadaro.ordermanagerapi.dto.UserRequestDTO;
+import com.gspadaro.ordermanagerapi.dto.UserResponseDTO;
 import com.gspadaro.ordermanagerapi.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,17 +15,17 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService service;
+    private final UserService service;
 
     public UserController(UserService service) {
         this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User User) {
-        User createdUser = service.create(User);
+    public ResponseEntity<UserResponseDTO> create(@RequestBody UserRequestDTO user) {
+        UserResponseDTO createdUser = service.create(user);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdUser.getId()).toUri();
+                .buildAndExpand(createdUser.id()).toUri();
         return ResponseEntity.created(uri).body(createdUser);
     }
 
@@ -34,17 +36,17 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User User) {
-        return ResponseEntity.ok().body(service.update(id, User));
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UserRequestDTO user) {
+        return ResponseEntity.ok().body(service.update(id, user));
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> findUserById(@PathVariable Long id) {
         return ResponseEntity.ok().body(service.findById(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
+    public ResponseEntity<List<UserResponseDTO>> findAll() {
         return ResponseEntity.ok().body(service.findAll());
     }
 }

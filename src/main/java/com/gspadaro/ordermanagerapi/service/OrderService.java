@@ -1,8 +1,13 @@
 package com.gspadaro.ordermanagerapi.service;
 
 import com.gspadaro.ordermanagerapi.domain.Order;
+import com.gspadaro.ordermanagerapi.domain.User;
+import com.gspadaro.ordermanagerapi.dto.OrderRequestDTO;
+import com.gspadaro.ordermanagerapi.dto.OrderResponseDTO;
 import com.gspadaro.ordermanagerapi.exception.ResourceNotFoundException;
+import com.gspadaro.ordermanagerapi.mapper.OrderMapper;
 import com.gspadaro.ordermanagerapi.repository.OrderRepository;
+import com.gspadaro.ordermanagerapi.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,34 +15,50 @@ import java.util.List;
 @Service
 public class OrderService {
 
-    private OrderRepository repository;
+    private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
+    private final OrderMapper orderMapper;
 
-    public OrderService(OrderRepository repository) {
-        this.repository = repository;
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, OrderMapper orderMapper) {
+        this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+        this.orderMapper = orderMapper;
     }
 
-    public Order create(Order order) {
-        return repository.save(order);
+    public OrderResponseDTO create(OrderRequestDTO orderRequest) {
+        User user = userRepository.findById(orderRequest.customerId()).orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
+        Order order = orderMapper.toEntity(orderRequest, user);
+        Order orderCreate = orderRepository.save(order);
+        return orderMapper.toResponseDTO(orderCreate);
     }
 
     public void delete(Long id) {
-        Order Order = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
-        repository.delete(Order);
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
+        orderRepository.delete(order);
     }
 
-    public Order update(Long id, Order order) {
-        Order existingOrder = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
-        existingOrder.setMoment(order.getMoment());
-        existingOrder.setOrderStatus(order.getOrderStatus());
-        existingOrder.setClient(order.getClient());
-        return repository.save(existingOrder);
+    public OrderResponseDTO update(Long id, OrderRequestDTO orderRequest) {
+        Order existingOrder = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
+        existingOrder.setMoment(orderRequest.moment());
+        existingOrder.setOrderStatus(orderRequest.orderStatus());
+        User existingUser = userRepository.findById(orderRequest.customerId()).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
+        existingOrder.setCustomer(existingUser);
+        Order orderUpdate = orderRepository.save(existingOrder);
+        return orderMapper.toResponseDTO(orderUpdate);
     }
 
-    public Order findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+    public OrderResponseDTO findById(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
+        return orderMapper.toResponseDTO(order);
     }
 
-    public List<Order> findAll() {
-        return repository.findAll();
+    public List<OrderResponseDTO> findAll() {
+        List<Order> orders = orderRepository.findAll();
+        return orderMapper.toResponseDTOList(orders);
+    }
+
+    public List<OrderResponseDTO> findByCustomerId(Long id) {
+        List<Order> orders = orderRepository.findByCustomerId(id);
+        return orderMapper.toResponseDTOList(orders);
     }
 }
