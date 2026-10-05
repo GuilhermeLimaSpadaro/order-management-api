@@ -1,31 +1,33 @@
-# 🛒 Order Manager API
+# 🛒 Order Management API
 
 API REST para gerenciamento de pedidos, produtos, usuários e pagamentos, desenvolvida com **Java e Spring Boot**, seguindo boas práticas de desenvolvimento backend e arquitetura em camadas.
 
----
+\---
 
 ## 🚀 Tecnologias
 
-- **Java 21**
-- **Spring Boot**
-- **Spring Data JPA / Hibernate**
-- **PostgreSQL**
-- **H2 Database**
-- **Maven**
-- **Git**
+* **Java 21**
+* **Spring Boot**
+* **Spring Data JPA / Hibernate**
+* **PostgreSQL**
+* **H2 Database**
+* **Maven**
+* **Git**
 
----
+\---
 
 ## 📦 Funcionalidades
 
-- Cadastro e gerenciamento de usuários
-- Cadastro e gerenciamento de produtos
-- Organização de produtos por categorias
-- Criação e acompanhamento de pedidos
-- Registro de pagamentos vinculados aos pedidos
-- Tratamento global de exceções com respostas padronizadas
+* Cadastro e gerenciamento de usuários
+* Cadastro e gerenciamento de produtos
+* Organização de produtos por categorias
+* Criação e acompanhamento de pedidos
+* Consulta de pedidos por usuário (customer)
+* Registro de pagamentos vinculados aos pedidos
+* Uso de DTOs de request/response para desacoplar a API do modelo de persistência (User e Order)
+* Tratamento global de exceções com respostas padronizadas
 
----
+\---
 
 ## 🗂️ Estrutura do Projeto
 
@@ -34,6 +36,8 @@ src/
 ├── controllers/       # Endpoints REST
 ├── services/          # Regras de negócio
 ├── repositories/      # Acesso ao banco de dados
+├── mapper/            # Conversão entre Entities e DTOs
+├── dto/                # DTOs de request/response
 ├── model/             # Entidades JPA
 │   ├── enums/         # Enumerações do sistema
 │   └── pk/            # Chaves compostas
@@ -41,70 +45,102 @@ src/
 └── config/            # Configurações de ambiente
 ```
 
----
+\---
 
 ## 🔗 Endpoints
 
 ### Usuários `/users`
 
-| Método | Rota         | Descrição              |
-|--------|--------------|-------------------------|
-| GET    | /users       | Lista todos os usuários |
-| GET    | /users/{id}  | Busca usuário por ID    |
-| POST   | /users       | Cria novo usuário       |
-| PUT    | /users/{id}  | Atualiza usuário        |
-| DELETE | /users/{id}  | Remove usuário          |
+|Método|Rota|Descrição|
+|-|-|-|
+|GET|/users|Lista todos os usuários|
+|GET|/users/{id}|Busca usuário por ID|
+|POST|/users|Cria novo usuário|
+|PUT|/users/{id}|Atualiza usuário|
+|DELETE|/users/{id}|Remove usuário|
 
 ### Produtos `/products`
 
-| Método | Rota           | Descrição              |
-|--------|----------------|--------------------------|
-| GET    | /products      | Lista todos os produtos |
-| GET    | /products/{id} | Busca produto por ID    |
-| POST   | /products      | Cria novo produto       |
-| DELETE | /products/{id} | Remove produto          |
+|Método|Rota|Descrição|
+|-|-|-|
+|GET|/products|Lista todos os produtos|
+|GET|/products/{id}|Busca produto por ID|
+|POST|/products|Cria novo produto|
+|DELETE|/products/{id}|Remove produto|
 
 ### Categorias `/categories`
 
-| Método | Rota             | Descrição                  |
-|--------|------------------|------------------------------|
-| GET    | /categories      | Lista todas as categorias   |
-| GET    | /categories/{id} | Busca categoria por ID      |
-| POST   | /categories      | Cria categoria              |
-| PUT    | /categories/{id} | Atualiza categoria          |
-| DELETE | /categories/{id} | Remove categoria            |
+|Método|Rota|Descrição|
+|-|-|-|
+|GET|/categories|Lista todas as categorias|
+|GET|/categories/{id}|Busca categoria por ID|
+|POST|/categories|Cria categoria|
+|PUT|/categories/{id}|Atualiza categoria|
+|DELETE|/categories/{id}|Remove categoria|
 
 ### Pedidos `/orders`
 
-| Método | Rota         | Descrição            |
-|--------|--------------|------------------------|
-| GET    | /orders      | Lista todos os pedidos |
-| GET    | /orders/{id} | Busca pedido por ID    |
-| POST   | /orders      | Cria pedido             |
-| PUT    | /orders/{id} | Atualiza pedido         |
-| DELETE | /orders/{id} | Remove pedido           |
+|Método|Rota|Descrição|
+|-|-|-|
+|GET|/orders|Lista todos os pedidos|
+|GET|/orders/{id}|Busca pedido por ID|
+|GET|/orders/users/{id}|Lista pedidos de um usuário (customer)|
+|POST|/orders|Cria pedido|
+|PUT|/orders/{id}|Atualiza pedido|
+|DELETE|/orders/{id}|Remove pedido|
 
----
+\---
+
+## 📄 DTOs
+
+A API não expõe as entidades JPA diretamente. Requests e responses usam DTOs próprios, e relacionamentos entre recursos (como o vínculo de um pedido com seu usuário) são representados apenas pelo **ID**, não pelo objeto completo.
+
+**Exemplo — criar um pedido (`POST /orders`)**
+
+```json
+{
+  "moment": "2026-07-29T14:30:00",
+  "orderStatus": "WAITING\\\\\\\_PAYMENT",
+  "customerId": 1,
+  "items": \\\\\\\[]
+}
+```
+
+**Exemplo — resposta de um pedido**
+
+```json
+{
+  "id": 1,
+  "moment": "2026-07-29T14:30:00",
+  "orderStatus": "WAITING\\\\\\\_PAYMENT",
+  "customerId": 1,
+  "items": \\\\\\\[]
+}
+```
+
+> ⚠️ O suporte a itens (`items`) no request/response ainda está em evolução — a representação atual usa a entidade `OrderItem` diretamente, o que deve ser substituído por um DTO próprio (`OrderItemRequestDTO`/`OrderItemResponseDTO`) futuramente.
+
+\---
 
 ## 📊 Status do Pedido (OrderStatus)
 
-| Código | Status           |
-|--------|------------------|
-| 1      | WAITING_PAYMENT  |
-| 2      | PAID             |
-| 3      | SHIPPED          |
-| 4      | DELIVERED        |
-| 5      | CANCELED         |
+|Código|Status|
+|-|-|
+|1|WAITING\_PAYMENT|
+|2|PAID|
+|3|SHIPPED|
+|4|DELIVERED|
+|5|CANCELED|
 
----
+\---
 
 ## ⚙️ Como executar localmente
 
 ### Pré-requisitos
 
-- Java 21+
-- Maven
-- Perfil de teste (H2 Database)
+* Java 21+
+* Maven
+* Perfil de teste (H2 Database)
 
 ### Clone o projeto
 
@@ -125,50 +161,55 @@ A API estará disponível em:
 http://localhost:8080
 ```
 
----
+\---
 
 ## 🌐 Perfis de Ambiente
 
 O projeto utiliza **Spring Profiles** para separar configurações de teste e produção:
 
-| Perfil       | Banco de Dados | Uso                                  |
-|--------------|-----------------|----------------------------------------|
-| `test`       | H2 (em memória) | Desenvolvimento e testes locais       |
-| `production` | PostgreSQL      | Ambiente produtivo, dados persistentes |
+|Perfil|Banco de Dados|Uso|
+|-|-|-|
+|`test`|H2 (em memória)|Desenvolvimento e testes locais|
+|`production`|PostgreSQL|Ambiente produtivo, dados persistentes|
 
 Para rodar com o perfil de produção, configure as variáveis de ambiente:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://HOST:PORT/DATABASE
-spring.datasource.username=SEU_USUARIO
-spring.datasource.password=SUA_SENHA
+spring.datasource.username=SEU\\\\\\\_USUARIO
+spring.datasource.password=SUA\\\\\\\_SENHA
 
 spring.jpa.hibernate.ddl-auto=update
 ```
 
----
+\---
 
 ## 📐 Modelo de Dados
 
 **User**
-- Possui vários pedidos (Orders)
+
+* Possui vários pedidos (Orders)
 
 **Order**
-- Pertence a um usuário
-- Possui um pagamento
-- Possui vários itens (OrderItems)
+
+* Pertence a um usuário (customer)
+* Possui um pagamento
+* Possui vários itens (OrderItems)
 
 **OrderItem**
-- Utiliza chave composta (Order + Product)
-- Armazena quantidade e preço
+
+* Utiliza chave composta (Order + Product)
+* Armazena quantidade e preço
 
 **Product**
-- Associado a categorias
+
+* Associado a categorias
 
 **Payment**
-- Relacionado ao pedido utilizando `@MapsId`
 
----
+* Relacionado ao pedido utilizando `@MapsId`
+
+\---
 
 ## 🛡️ Tratamento de Erros
 
@@ -184,8 +225,9 @@ A API possui respostas padronizadas para exceções:
 }
 ```
 
----
+\---
 
 ## 👤 Autor
 
 Feito por **Guilherme**
+
