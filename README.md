@@ -1,233 +1,216 @@
-# 🛒 Order Management API
+# Order Management API
 
-API REST para gerenciamento de pedidos, produtos, usuários e pagamentos, desenvolvida com **Java e Spring Boot**, seguindo boas práticas de desenvolvimento backend e arquitetura em camadas.
+API REST para gerenciamento de usuários, produtos, categorias, pedidos e itens de pedido.
 
-\---
+O projeto foi desenvolvido com Java e Spring Boot utilizando Spring Data JPA/Hibernate e banco relacional, com separação em camadas e uso de DTOs em operações de usuários e pedidos.
 
-## 🚀 Tecnologias
+## Tecnologias
 
-* **Java 21**
-* **Spring Boot**
-* **Spring Data JPA / Hibernate**
-* **PostgreSQL**
-* **H2 Database**
-* **Maven**
-* **Git**
+- Java 21
+- Spring Boot 4.0.6
+- Spring Web MVC
+- Spring Data JPA
+- Hibernate
+- PostgreSQL
+- H2 Database
+- Maven
 
-\---
+## Funcionalidades
 
-## 📦 Funcionalidades
+- Cadastro e gerenciamento de usuários
+- Cadastro e gerenciamento de produtos
+- Cadastro e gerenciamento de categorias
+- Criação e gerenciamento de pedidos
+- Consulta de pedidos por usuário
+- Associação de produtos a categorias
+- Associação de pedidos a usuários
+- Itens de pedido com chave composta
+- DTOs de request/response para usuários e pedidos
+- Tratamento global de exceções
+- Carga de dados de exemplo no perfil `test`
 
-* Cadastro e gerenciamento de usuários
-* Cadastro e gerenciamento de produtos
-* Organização de produtos por categorias
-* Criação e acompanhamento de pedidos
-* Consulta de pedidos por usuário (customer)
-* Registro de pagamentos vinculados aos pedidos
-* Uso de DTOs de request/response para desacoplar a API do modelo de persistência (User e Order)
-* Tratamento global de exceções com respostas padronizadas
-
-\---
-
-## 🗂️ Estrutura do Projeto
+## Modelo de domínio
 
 ```text
-src/
-├── controllers/       # Endpoints REST
-├── services/          # Regras de negócio
-├── repositories/      # Acesso ao banco de dados
-├── mapper/            # Conversão entre Entities e DTOs
-├── dto/                # DTOs de request/response
-├── model/             # Entidades JPA
-│   ├── enums/         # Enumerações do sistema
-│   └── pk/            # Chaves compostas
-├── exceptions/        # Tratamento de exceções
-└── config/            # Configurações de ambiente
+User
+ └── Orders
+
+Order
+ ├── User (customer)
+ └── OrderItems
+
+OrderItem
+ ├── Order
+ └── Product
+
+Product
+ └── Categories
 ```
 
-\---
+## Estrutura
 
-## 🔗 Endpoints
+```text
+src/main/java/com/gspadaro/ordermanagerapi
+├── config
+├── controller
+├── domain
+│   ├── enums
+│   └── pk
+├── dto
+├── exception
+├── mapper
+├── repository
+└── service
+```
 
-### Usuários `/users`
+- `controller` — endpoints REST
+- `service` — regras de negócio
+- `repository` — persistência com Spring Data JPA
+- `mapper` — conversão entre entidades e DTOs
+- `dto` — objetos de entrada e saída
+- `domain` — entidades JPA
+- `exception` — tratamento de exceções
+- `config` — carga de dados de exemplo (perfil `test`)
 
-|Método|Rota|Descrição|
-|-|-|-|
-|GET|/users|Lista todos os usuários|
-|GET|/users/{id}|Busca usuário por ID|
-|POST|/users|Cria novo usuário|
-|PUT|/users/{id}|Atualiza usuário|
-|DELETE|/users/{id}|Remove usuário|
+## Endpoints
 
-### Produtos `/products`
+### Users
 
-|Método|Rota|Descrição|
-|-|-|-|
-|GET|/products|Lista todos os produtos|
-|GET|/products/{id}|Busca produto por ID|
-|POST|/products|Cria novo produto|
-|DELETE|/products/{id}|Remove produto|
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/users` | Cria um usuário |
+| GET | `/users` | Lista usuários |
+| GET | `/users/{id}` | Busca um usuário |
+| PUT | `/users/{id}` | Atualiza um usuário |
+| DELETE | `/users/{id}` | Remove um usuário |
 
-### Categorias `/categories`
+### Products
 
-|Método|Rota|Descrição|
-|-|-|-|
-|GET|/categories|Lista todas as categorias|
-|GET|/categories/{id}|Busca categoria por ID|
-|POST|/categories|Cria categoria|
-|PUT|/categories/{id}|Atualiza categoria|
-|DELETE|/categories/{id}|Remove categoria|
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/products` | Cria um produto |
+| GET | `/products` | Lista produtos |
+| GET | `/products/{id}` | Busca um produto |
+| PUT | `/products/{id}` | Atualiza um produto |
+| DELETE | `/products/{id}` | Remove um produto |
 
-### Pedidos `/orders`
+### Categories
 
-|Método|Rota|Descrição|
-|-|-|-|
-|GET|/orders|Lista todos os pedidos|
-|GET|/orders/{id}|Busca pedido por ID|
-|GET|/orders/users/{id}|Lista pedidos de um usuário (customer)|
-|POST|/orders|Cria pedido|
-|PUT|/orders/{id}|Atualiza pedido|
-|DELETE|/orders/{id}|Remove pedido|
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/categories` | Cria uma categoria |
+| GET | `/categories` | Lista categorias |
+| GET | `/categories/{id}` | Busca uma categoria |
+| PUT | `/categories/{id}` | Atualiza uma categoria |
+| DELETE | `/categories/{id}` | Remove uma categoria |
 
-\---
+### Orders
 
-## 📄 DTOs
+| Método | Endpoint | Descrição |
+|---|---|---|
+| POST | `/orders` | Cria um pedido |
+| GET | `/orders` | Lista pedidos |
+| GET | `/orders/{id}` | Busca um pedido |
+| GET | `/orders/users/{id}` | Lista pedidos de um usuário |
+| PUT | `/orders/{id}` | Atualiza um pedido |
+| DELETE | `/orders/{id}` | Remove um pedido |
 
-A API não expõe as entidades JPA diretamente. Requests e responses usam DTOs próprios, e relacionamentos entre recursos (como o vínculo de um pedido com seu usuário) são representados apenas pelo **ID**, não pelo objeto completo.
+## Status do pedido
 
-**Exemplo — criar um pedido (`POST /orders`)**
+| Código | Status |
+|---|---|
+| 1 | `WAITING_PAYMENT` |
+| 2 | `PAID` |
+| 3 | `SHIPPED` |
+| 4 | `DELIVERED` |
+| 5 | `CANCELED` |
+
+## DTOs
+
+As operações de usuários e pedidos utilizam DTOs para separar a representação da API das entidades de persistência. Produtos e categorias ainda expõem diretamente as entidades.
+
+Exemplo de criação de pedido:
 
 ```json
 {
   "moment": "2026-07-29T14:30:00",
-  "orderStatus": "WAITING\\\\\\\_PAYMENT",
+  "orderStatus": "WAITING_PAYMENT",
   "customerId": 1,
-  "items": \\\\\\\[]
+  "items": []
 }
 ```
 
-**Exemplo — resposta de um pedido**
+Atualmente, o campo `items` aparece nos DTOs, mas não é persistido na criação ou atualização do pedido. Os itens existem apenas nos dados de exemplo do perfil `test`. A criação de itens via API pode ser evoluída com DTOs específicos de item de pedido.
 
-```json
-{
-  "id": 1,
-  "moment": "2026-07-29T14:30:00",
-  "orderStatus": "WAITING\\\\\\\_PAYMENT",
-  "customerId": 1,
-  "items": \\\\\\\[]
-}
-```
+## Perfis de ambiente
 
-> ⚠️ O suporte a itens (`items`) no request/response ainda está em evolução — a representação atual usa a entidade `OrderItem` diretamente, o que deve ser substituído por um DTO próprio (`OrderItemRequestDTO`/`OrderItemResponseDTO`) futuramente.
+O perfil ativo por padrão é `test` (definido em `application.properties`).
 
-\---
+### Teste
 
-## 📊 Status do Pedido (OrderStatus)
-
-|Código|Status|
-|-|-|
-|1|WAITING\_PAYMENT|
-|2|PAID|
-|3|SHIPPED|
-|4|DELIVERED|
-|5|CANCELED|
-
-\---
-
-## ⚙️ Como executar localmente
-
-### Pré-requisitos
-
-* Java 21+
-* Maven
-* Perfil de teste (H2 Database)
-
-### Clone o projeto
+O perfil `test` utiliza H2 em memória, com console H2 habilitado, e popula o banco com categorias, produtos, usuários, pedidos e itens de exemplo a cada inicialização:
 
 ```bash
-git clone https://github.com/seu-usuario/order-manager-api.git
-cd order-manager-api
+./mvnw spring-boot:run
 ```
 
-### Execute
+Banco:
+
+```text
+jdbc:h2:mem:testdb
+```
+
+### Produção
+
+O perfil `prod` utiliza PostgreSQL por meio das variáveis:
+
+```text
+DATABASE_URL
+DATABASE_USERNAME
+DATABASE_PASSWORD
+```
+
+Para executar com esse perfil:
 
 ```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=test
+./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
 ```
 
-A API estará disponível em:
+O projeto utiliza:
 
-```
-http://localhost:8080
-```
-
-\---
-
-## 🌐 Perfis de Ambiente
-
-O projeto utiliza **Spring Profiles** para separar configurações de teste e produção:
-
-|Perfil|Banco de Dados|Uso|
-|-|-|-|
-|`test`|H2 (em memória)|Desenvolvimento e testes locais|
-|`production`|PostgreSQL|Ambiente produtivo, dados persistentes|
-
-Para rodar com o perfil de produção, configure as variáveis de ambiente:
-
-```properties
-spring.datasource.url=jdbc:postgresql://HOST:PORT/DATABASE
-spring.datasource.username=SEU\\\\\\\_USUARIO
-spring.datasource.password=SUA\\\\\\\_SENHA
-
+```text
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-\---
+nesse perfil.
 
-## 📐 Modelo de Dados
+## Como executar
 
-**User**
+### Pré-requisitos
 
-* Possui vários pedidos (Orders)
+- Java 21
+- Maven
 
-**Order**
+Para desenvolvimento local, o perfil `test` já é o padrão e não exige servidor PostgreSQL.
 
-* Pertence a um usuário (customer)
-* Possui um pagamento
-* Possui vários itens (OrderItems)
-
-**OrderItem**
-
-* Utiliza chave composta (Order + Product)
-* Armazena quantidade e preço
-
-**Product**
-
-* Associado a categorias
-
-**Payment**
-
-* Relacionado ao pedido utilizando `@MapsId`
-
-\---
-
-## 🛡️ Tratamento de Erros
-
-A API possui respostas padronizadas para exceções:
-
-```json
-{
-  "timestamp": "2024-01-01T10:00:00",
-  "status": 404,
-  "error": "Resource not found",
-  "message": "Resource not found: 99",
-  "path": "/users/99"
-}
+```bash
+./mvnw spring-boot:run
 ```
 
-\---
+A API fica disponível em:
 
-## 👤 Autor
+```text
+http://localhost:8080
+```
 
-Feito por **Guilherme**
+## Roadmap
 
+Melhorias e correções planejadas para o projeto:
+
+- Persistir os itens do pedido (`items`) na criação e atualização, com DTOs específicos de item
+- Utilizar DTOs também em produtos e categorias, em vez de expor as entidades
+- Adicionar validação dos dados de entrada
+
+## Autor
+
+**Guilherme Spadaro**
