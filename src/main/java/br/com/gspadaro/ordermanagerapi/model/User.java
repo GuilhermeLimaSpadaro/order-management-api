@@ -1,4 +1,4 @@
-package com.gspadaro.ordermanagerapi.domain;
+package br.com.gspadaro.ordermanagerapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -24,7 +24,7 @@ public class User implements Serializable {
     private String phone;
     private String password;
     @JsonIgnore
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "user")
     List<Order> orders = new ArrayList<>();
 
     public User() {

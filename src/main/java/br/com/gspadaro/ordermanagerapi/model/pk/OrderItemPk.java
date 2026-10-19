@@ -1,7 +1,7 @@
-package com.gspadaro.ordermanagerapi.domain.pk;
+package br.com.gspadaro.ordermanagerapi.model.pk;
 
-import com.gspadaro.ordermanagerapi.domain.Order;
-import com.gspadaro.ordermanagerapi.domain.Product;
+import br.com.gspadaro.ordermanagerapi.model.Order;
+import br.com.gspadaro.ordermanagerapi.model.Product;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

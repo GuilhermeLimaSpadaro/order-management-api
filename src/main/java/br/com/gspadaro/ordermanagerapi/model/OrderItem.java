@@ -1,7 +1,7 @@
-package com.gspadaro.ordermanagerapi.domain;
+package br.com.gspadaro.ordermanagerapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.gspadaro.ordermanagerapi.domain.pk.OrderItemPk;
+import br.com.gspadaro.ordermanagerapi.model.pk.OrderItemPk;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

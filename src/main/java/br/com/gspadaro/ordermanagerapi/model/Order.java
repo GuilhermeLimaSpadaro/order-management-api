@@ -1,7 +1,7 @@
-package com.gspadaro.ordermanagerapi.domain;
+package br.com.gspadaro.ordermanagerapi.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.gspadaro.ordermanagerapi.domain.enums.OrderStatus;
+import br.com.gspadaro.ordermanagerapi.model.enums.OrderStatus;
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "tb_order")
+@Table(name = "orders")
 public class Order implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -22,10 +22,10 @@ public class Order implements Serializable {
     private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime moment;
-    private Integer orderStatus;
+    private OrderStatus orderStatus;
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private User customer;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(mappedBy = "id.order")
     private Set<OrderItem> items = new HashSet<>();
@@ -36,7 +36,7 @@ public class Order implements Serializable {
     public Order(Long id, LocalDateTime moment, OrderStatus orderStatus) {
         this.id = id;
         this.moment = moment;
-        setOrderStatus(orderStatus);
+        this.orderStatus = orderStatus;
     }
 
     public Long getId() {
@@ -56,23 +56,27 @@ public class Order implements Serializable {
     }
 
     public OrderStatus getOrderStatus() {
-        return OrderStatus.valueOf(orderStatus);
+        return orderStatus;
     }
 
     public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus.getCode();
+        this.orderStatus = orderStatus;
     }
 
-    public User getCustomer() {
-        return customer;
+    public User getUser() {
+        return user;
     }
 
-    public void setCustomer(User customer) {
-        this.customer = customer;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Set<OrderItem> getItems() {
         return items;
+    }
+
+    public void setItems(Set<OrderItem> items) {
+        this.items = items;
     }
 
     @Override
