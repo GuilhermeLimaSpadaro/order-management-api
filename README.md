@@ -2,17 +2,18 @@
 
 API REST para gerenciamento de usuários, produtos, categorias, pedidos e itens de pedido.
 
-O projeto foi desenvolvido com Java e Spring Boot utilizando Spring Data JPA/Hibernate e banco relacional, com separação em camadas e uso de DTOs em operações de usuários e pedidos.
+O projeto foi desenvolvido com Java e Spring Boot utilizando Spring Data JPA/Hibernate e banco relacional, com separação em camadas, uso de DTOs e mapeamento com MapStruct.
 
 ## Tecnologias
 
 - Java 21
-- Spring Boot 4.0.6
+- Spring Boot 4.1.1
 - Spring Web MVC
 - Spring Data JPA
 - Hibernate
 - PostgreSQL
 - H2 Database
+- MapStruct
 - Maven
 
 ## Funcionalidades
@@ -25,9 +26,10 @@ O projeto foi desenvolvido com Java e Spring Boot utilizando Spring Data JPA/Hib
 - Associação de produtos a categorias
 - Associação de pedidos a usuários
 - Itens de pedido com chave composta
-- DTOs de request/response para usuários e pedidos
+- DTOs de request/response para usuários, produtos, categorias e pedidos
+- Mapeamento entre entidades e DTOs com MapStruct
+- Versionamento da API com prefixo `/api/v1`
 - Tratamento global de exceções
-- Carga de dados de exemplo no perfil `test`
 
 ## Modelo de domínio
 
@@ -36,7 +38,7 @@ User
  └── Orders
 
 Order
- ├── User (customer)
+ ├── User
  └── OrderItems
 
 OrderItem
@@ -50,15 +52,19 @@ Product
 ## Estrutura
 
 ```text
-src/main/java/com/gspadaro/ordermanagerapi
-├── config
+src/main/java/br/com/gspadaro/ordermanagerapi
 ├── controller
-├── domain
-│   ├── enums
-│   └── pk
 ├── dto
+│   ├── category
+│   ├── order
+│   ├── product
+│   └── user
 ├── exception
 ├── mapper
+│   └── custom
+├── model
+│   ├── enums
+│   └── pk
 ├── repository
 └── service
 ```
@@ -66,11 +72,10 @@ src/main/java/com/gspadaro/ordermanagerapi
 - `controller` — endpoints REST
 - `service` — regras de negócio
 - `repository` — persistência com Spring Data JPA
-- `mapper` — conversão entre entidades e DTOs
+- `mapper` — conversão entre entidades e DTOs (MapStruct)
 - `dto` — objetos de entrada e saída
-- `domain` — entidades JPA
+- `model` — entidades JPA
 - `exception` — tratamento de exceções
-- `config` — carga de dados de exemplo (perfil `test`)
 
 ## Endpoints
 
@@ -78,42 +83,38 @@ src/main/java/com/gspadaro/ordermanagerapi
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/users` | Cria um usuário |
-| GET | `/users` | Lista usuários |
-| GET | `/users/{id}` | Busca um usuário |
-| PUT | `/users/{id}` | Atualiza um usuário |
-| DELETE | `/users/{id}` | Remove um usuário |
+| POST | `/api/v1/users` | Cria um usuário |
+| GET | `/api/v1/users/{id}` | Busca um usuário |
+| PUT | `/api/v1/users/{id}` | Atualiza um usuário |
+| DELETE | `/api/v1/users/{id}` | Remove um usuário |
 
 ### Products
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/products` | Cria um produto |
-| GET | `/products` | Lista produtos |
-| GET | `/products/{id}` | Busca um produto |
-| PUT | `/products/{id}` | Atualiza um produto |
-| DELETE | `/products/{id}` | Remove um produto |
+| POST | `/api/v1/products` | Cria um produto |
+| GET | `/api/v1/products/{id}` | Busca um produto |
+| PUT | `/api/v1/products/{id}` | Atualiza um produto |
+| DELETE | `/api/v1/products/{id}` | Remove um produto |
 
 ### Categories
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/categories` | Cria uma categoria |
-| GET | `/categories` | Lista categorias |
-| GET | `/categories/{id}` | Busca uma categoria |
-| PUT | `/categories/{id}` | Atualiza uma categoria |
-| DELETE | `/categories/{id}` | Remove uma categoria |
+| POST | `/api/v1/categories` | Cria uma categoria |
+| GET | `/api/v1/categories/{id}` | Busca uma categoria |
+| PUT | `/api/v1/categories/{id}` | Atualiza uma categoria |
+| DELETE | `/api/v1/categories/{id}` | Remove uma categoria |
 
 ### Orders
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/orders` | Cria um pedido |
-| GET | `/orders` | Lista pedidos |
-| GET | `/orders/{id}` | Busca um pedido |
-| GET | `/orders/users/{id}` | Lista pedidos de um usuário |
-| PUT | `/orders/{id}` | Atualiza um pedido |
-| DELETE | `/orders/{id}` | Remove um pedido |
+| POST | `/api/v1/orders` | Cria um pedido |
+| GET | `/api/v1/orders/{id}` | Busca um pedido |
+| GET | `/api/v1/orders/users/{id}` | Lista pedidos de um usuário |
+| PUT | `/api/v1/orders/{id}` | Atualiza um pedido |
+| DELETE | `/api/v1/orders/{id}` | Remove um pedido |
 
 ## Status do pedido
 
@@ -127,7 +128,7 @@ src/main/java/com/gspadaro/ordermanagerapi
 
 ## DTOs
 
-As operações de usuários e pedidos utilizam DTOs para separar a representação da API das entidades de persistência. Produtos e categorias ainda expõem diretamente as entidades.
+Todas as operações utilizam DTOs de request/response para separar a representação da API das entidades de persistência, com conversão feita por mappers MapStruct.
 
 Exemplo de criação de pedido:
 
@@ -135,54 +136,22 @@ Exemplo de criação de pedido:
 {
   "moment": "2026-07-29T14:30:00",
   "orderStatus": "WAITING_PAYMENT",
-  "customerId": 1,
+  "userId": 1,
   "items": []
 }
 ```
 
-Atualmente, o campo `items` aparece nos DTOs, mas não é persistido na criação ou atualização do pedido. Os itens existem apenas nos dados de exemplo do perfil `test`. A criação de itens via API pode ser evoluída com DTOs específicos de item de pedido.
+Atualmente, o campo `items` aparece nos DTOs, mas não é persistido na criação ou atualização do pedido. A criação de itens via API pode ser evoluída com DTOs específicos de item de pedido.
 
-## Perfis de ambiente
+## Configuração
 
-O perfil ativo por padrão é `test` (definido em `application.yml`).
-
-### Teste
-
-O perfil `test` utiliza H2 em memória, com console H2 habilitado, e popula o banco com categorias, produtos, usuários, pedidos e itens de exemplo a cada inicialização:
-
-```bash
-./mvnw spring-boot:run
-```
-
-Banco:
+A configuração fica em `application.yml`. Por padrão, a aplicação usa H2 em memória, com console habilitado em `/h2-console`:
 
 ```text
-jdbc:h2:mem:testdb
+jdbc:h2:mem:order_db
 ```
 
-### Produção
-
-O perfil `prod` utiliza PostgreSQL por meio das variáveis:
-
-```text
-DATABASE_URL
-DATABASE_USERNAME
-DATABASE_PASSWORD
-```
-
-Para executar com esse perfil:
-
-```bash
-./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
-```
-
-O projeto utiliza:
-
-```text
-spring.jpa.hibernate.ddl-auto=update
-```
-
-nesse perfil.
+O driver do PostgreSQL já está no projeto. Para usá-lo, basta ajustar `spring.datasource` no `application.yml`.
 
 ## Como executar
 
@@ -191,7 +160,7 @@ nesse perfil.
 - Java 21
 - Maven
 
-Para desenvolvimento local, o perfil `test` já é o padrão e não exige servidor PostgreSQL.
+Para desenvolvimento local, não é necessário instalar nenhum banco: o H2 em memória já é o padrão.
 
 ```bash
 ./mvnw spring-boot:run
@@ -208,7 +177,6 @@ http://localhost:8080
 Melhorias e correções planejadas para o projeto:
 
 - Persistir os itens do pedido (`items`) na criação e atualização, com DTOs específicos de item
-- Utilizar DTOs também em produtos e categorias, em vez de expor as entidades
 - Adicionar validação dos dados de entrada
 
 ## Autor
