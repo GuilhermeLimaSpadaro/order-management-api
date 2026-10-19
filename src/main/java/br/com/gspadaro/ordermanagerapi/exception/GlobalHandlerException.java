@@ -1,4 +1,4 @@
-package com.gspadaro.ordermanagerapi.exception;
+package br.com.gspadaro.ordermanagerapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.gspadaro.ordermanagerapi.exception;
+package br.com.gspadaro.ordermanagerapi.exception;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serial;
