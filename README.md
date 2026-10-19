@@ -144,7 +144,7 @@ Atualmente, o campo `items` aparece nos DTOs, mas não é persistido na criaçã
 
 ## Perfis de ambiente
 
-O perfil ativo por padrão é `test` (definido em `application.properties`).
+O perfil ativo por padrão é `test` (definido em `application.yml`).
 
 ### Teste
 
