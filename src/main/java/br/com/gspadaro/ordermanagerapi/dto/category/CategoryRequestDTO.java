@@ -1,4 +1,6 @@
 package br.com.gspadaro.ordermanagerapi.dto.category;
 
-public record CategoryRequestDTO(String name) {
+import jakarta.validation.constraints.NotBlank;
+
+public record CategoryRequestDTO(@NotBlank String name) {
 }
