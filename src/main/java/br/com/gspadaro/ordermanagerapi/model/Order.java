@@ -3,13 +3,12 @@ package br.com.gspadaro.ordermanagerapi.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import br.com.gspadaro.ordermanagerapi.model.enums.OrderStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.time.Instant;
+import java.util.*;
 
 @Entity
 @Table(name = "orders")
@@ -21,19 +20,20 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime moment;
+    @CreationTimestamp
+    private Instant moment;
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @OneToMany(mappedBy = "id.order")
-    private Set<OrderItem> items = new HashSet<>();
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> items = new ArrayList<>();
 
     public Order() {
     }
 
-    public Order(Long id, LocalDateTime moment, OrderStatus orderStatus) {
+    public Order(Long id, Instant moment, OrderStatus orderStatus) {
         this.id = id;
         this.moment = moment;
         this.orderStatus = orderStatus;
@@ -47,11 +47,11 @@ public class Order implements Serializable {
         this.id = id;
     }
 
-    public LocalDateTime getMoment() {
+    public Instant getMoment() {
         return moment;
     }
 
-    public void setMoment(LocalDateTime moment) {
+    public void setMoment(Instant moment) {
         this.moment = moment;
     }
 
@@ -71,12 +71,8 @@ public class Order implements Serializable {
         this.user = user;
     }
 
-    public Set<OrderItem> getItems() {
+    public List<OrderItem> getItems() {
         return items;
-    }
-
-    public void setItems(Set<OrderItem> items) {
-        this.items = items;
     }
 
     @Override

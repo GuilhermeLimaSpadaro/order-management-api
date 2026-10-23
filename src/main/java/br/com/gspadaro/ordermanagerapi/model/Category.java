@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "tb_category")
@@ -21,7 +19,7 @@ public class Category implements Serializable {
     private String name;
     @JsonIgnore
     @ManyToMany(mappedBy = "categories")
-    private final Set<Product> products = new HashSet<>();
+    private final List<Product> products = new ArrayList<>();
 
     public Category() {
     }
@@ -45,6 +43,10 @@ public class Category implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Product> getProducts() {
+        return products;
     }
 
     @Override

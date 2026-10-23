@@ -4,12 +4,10 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
-@Table(name = "tb_product")
+@Table(name = "products")
 public class Product implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -21,9 +19,10 @@ public class Product implements Serializable {
     private String description;
     private Double price;
     private String imgUrl;
-    @ManyToMany
-    @JoinTable(name = "tb_product_id_category_id", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private final Set<Category> categories = new HashSet<>();
+    @OneToMany(mappedBy = "product")
+    private List<OrderItem> orderItem;
+
+    private final List<Category> categories = new ArrayList<>();
 
     public Product() {
     }
@@ -76,7 +75,15 @@ public class Product implements Serializable {
         this.imgUrl = imgUrl;
     }
 
-    public Set<Category> getCategories() {
+    public List<OrderItem> getOrderItem() {
+        return orderItem;
+    }
+
+    public void setOrderItem(List<OrderItem> orderItem) {
+        this.orderItem = orderItem;
+    }
+
+    public List<Category> getCategories() {
         return categories;
     }
 
