@@ -1,14 +1,7 @@
 spring:
-  datasource:
-    url: jdbc:h2:mem:order_db
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  application:
+    name: order-manager-api
+  profiles:
+    active: dev
   jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
+    open-in-view: false
