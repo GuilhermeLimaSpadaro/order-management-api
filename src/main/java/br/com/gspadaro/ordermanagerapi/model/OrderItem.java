@@ -1,35 +1,47 @@
 package br.com.gspadaro.ordermanagerapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import br.com.gspadaro.ordermanagerapi.model.pk.OrderItemPk;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "tb_order_item")
+@Table(name = "order_items")
 public class OrderItem implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private final OrderItemPk id = new OrderItemPk();
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
     private Integer quantity;
     private Double price;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     public OrderItem() {
     }
 
-    public OrderItem(Order order, Product product, Integer quantity, Double price) {
-        id.setOrder(order);
-        id.setProduct(product);
+    public OrderItem(Long id, Integer quantity, Double price, Order order) {
+        this.id = id;
         this.quantity = quantity;
         this.price = price;
+        this.order = order;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getQuantity() {
@@ -48,21 +60,20 @@ public class OrderItem implements Serializable {
         this.price = price;
     }
 
-    @JsonIgnore
     public Order getOrder() {
-        return id.getOrder();
+        return order;
     }
 
     public void setOrder(Order order) {
-        id.setOrder(order);
+        this.order = order;
     }
 
     public Product getProduct() {
-        return id.getProduct();
+        return product;
     }
 
     public void setProduct(Product product) {
-        id.setProduct(product);
+        this.product = product;
     }
 
     @Override
