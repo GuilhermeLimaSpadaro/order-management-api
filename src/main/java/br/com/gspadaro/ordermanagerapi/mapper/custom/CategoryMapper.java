@@ -15,21 +15,16 @@ import java.util.List;
 public interface CategoryMapper extends ObjectMapper<Category, CategoryRequestDTO, CategoryResponseDTO> {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "products", ignore = true)
     @Override
     Category toEntity(CategoryRequestDTO request);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", source = "request.name")
+    @Mapping(target = "products", ignore = true)
     Category toUpdateCategory(CategoryRequestDTO request, @MappingTarget Category category);
 
-    @Mapping(target = "products", ignore = true)
     @Override
     CategoryResponseDTO toResponseDTO(Category category);
-
-    @Mapping(target = "id", source = "category.id")
-    @Mapping(target = "name", source = "category.name")
-    @Mapping(target = "products", source = "products")
-    CategoryResponseDTO toResponseProductDTO(Category category, List<ProductResponseDTO> products);
 
     @Override
     List<CategoryResponseDTO> toListResponse(List<Category> entityList);

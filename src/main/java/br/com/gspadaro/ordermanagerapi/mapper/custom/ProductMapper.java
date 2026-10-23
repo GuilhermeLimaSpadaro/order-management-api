@@ -6,6 +6,7 @@ import br.com.gspadaro.ordermanagerapi.dto.product.ProductResponseDTO;
 import br.com.gspadaro.ordermanagerapi.mapper.ObjectMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -13,15 +14,15 @@ import java.util.List;
 public interface ProductMapper extends ObjectMapper<Product, ProductRequestDTO, ProductResponseDTO> {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orderItem", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Override
     Product toEntity(ProductRequestDTO request);
 
-    @Mapping(target = "name", source = "request.name")
-    @Mapping(target = "description", source = "request.description")
-    @Mapping(target = "price", source = "request.price")
-    @Mapping(target = "imgUrl", source = "request.imgUrl")
-    Product toUpdateOrder(ProductRequestDTO request, Product product);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "orderItem", ignore = true)
+    @Mapping(target = "categories", ignore = true)
+    Product toUpdateProduct(ProductRequestDTO request, @MappingTarget Product product);
 
     @Override
     ProductResponseDTO toResponseDTO(Product product);
