@@ -35,7 +35,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO update(Long id, UserRequestDTO userRequest) {
         var user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
-        var userUpdated = userMapper.toUpdateOrder(userRequest, user);
+        var userUpdated = userMapper.toUpdateUser(userRequest, user);
         var userSaved = userRepository.save(userUpdated);
         return userMapper.toResponseDTO(userSaved);
 

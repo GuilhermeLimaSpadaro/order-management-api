@@ -1,32 +1,43 @@
 package br.com.gspadaro.ordermanagerapi.service;
 
+import br.com.gspadaro.ordermanagerapi.dto.order.OrderItemRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.order.OrderRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.order.OrderResponseDTO;
 import br.com.gspadaro.ordermanagerapi.exception.ResourceNotFoundException;
 import br.com.gspadaro.ordermanagerapi.mapper.custom.OrderMapper;
+import br.com.gspadaro.ordermanagerapi.model.OrderItem;
 import br.com.gspadaro.ordermanagerapi.repository.OrderRepository;
+import br.com.gspadaro.ordermanagerapi.repository.ProductRepository;
+import br.com.gspadaro.ordermanagerapi.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final OrderMapper orderMapper;
 
-    public OrderService(OrderRepository orderRepository, UserService userService, OrderMapper orderMapper) {
+    public OrderService(OrderRepository orderRepository, UserRepository userRepository, ProductRepository productRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
-        this.userService = userService;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
         this.orderMapper = orderMapper;
     }
 
     @Transactional
     public OrderResponseDTO create(OrderRequestDTO request) {
-        var user = userService.findById(request.userId());
-        var order = orderMapper.toEntityWithUser(request, user);
+        var user = userRepository.findById(request.userId()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        var products = request.items().stream()
+                .map(orderItem -> productRepository.findById(orderItem.productId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found"))).toList();
+        var order = orderMapper.toEntity(request, user, products);
+        orderMapper.populateItems(order, request, products);
         var orderCreated = orderRepository.save(order);
         return orderMapper.toResponseDTO(orderCreated);
     }

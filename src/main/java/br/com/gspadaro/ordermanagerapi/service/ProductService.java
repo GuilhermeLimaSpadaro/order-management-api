@@ -35,7 +35,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDTO update(Long id, ProductRequestDTO request) {
         var product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Resource not found. ID:" + id));
-        var productUpdated = productMapper.toUpdateOrder(request, product);
+        var productUpdated = productMapper.toUpdateProduct(request, product);
         var productSaved = productRepository.save(productUpdated);
         return productMapper.toResponseDTO(productSaved);
     }
