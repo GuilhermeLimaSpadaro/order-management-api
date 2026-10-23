@@ -3,6 +3,7 @@ package br.com.gspadaro.ordermanagerapi.controller;
 import br.com.gspadaro.ordermanagerapi.dto.category.CategoryRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.category.CategoryResponseDTO;
 import br.com.gspadaro.ordermanagerapi.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,7 +21,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> create(@RequestBody CategoryRequestDTO request) {
+    public ResponseEntity<CategoryResponseDTO> create( @Valid @RequestBody CategoryRequestDTO request) {
         var category = service.create(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(category.id()).toUri();
@@ -33,7 +34,7 @@ public class CategoryController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id, @RequestBody CategoryRequestDTO category) {
+    public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id, @Valid @RequestBody CategoryRequestDTO category) {
         return ResponseEntity.ok().body(service.update(id, category));
     }
 

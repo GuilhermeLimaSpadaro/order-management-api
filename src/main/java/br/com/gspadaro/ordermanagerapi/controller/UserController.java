@@ -3,6 +3,7 @@ package br.com.gspadaro.ordermanagerapi.controller;
 import br.com.gspadaro.ordermanagerapi.dto.user.UserRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.user.UserResponseDTO;
 import br.com.gspadaro.ordermanagerapi.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> create(@RequestBody UserRequestDTO user) {
+    public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserRequestDTO user) {
         UserResponseDTO createdUser = service.create(user);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdUser.id()).toUri();
         return ResponseEntity.created(uri).body(createdUser);
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UserRequestDTO user) {
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserRequestDTO user) {
         return ResponseEntity.ok().body(service.update(id, user));
     }
 

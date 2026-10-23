@@ -3,6 +3,7 @@ package br.com.gspadaro.ordermanagerapi.controller;
 import br.com.gspadaro.ordermanagerapi.dto.product.ProductRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.product.ProductResponseDTO;
 import br.com.gspadaro.ordermanagerapi.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -20,7 +21,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponseDTO> create(@RequestBody ProductRequestDTO request) {
+    public ResponseEntity<ProductResponseDTO> create(@Valid @RequestBody ProductRequestDTO request) {
         var product = service.create(request);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(product.id()).toUri();
         return ResponseEntity.created(uri).body(product);
@@ -32,7 +33,7 @@ public class ProductController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ProductResponseDTO> update(@PathVariable Long id, @RequestBody ProductRequestDTO request) {
+    public ResponseEntity<ProductResponseDTO> update(@PathVariable Long id, @Valid @RequestBody ProductRequestDTO request) {
         return ResponseEntity.ok().body(service.update(id, request));
     }
 
