@@ -1,11 +1,9 @@
 package br.com.gspadaro.ordermanagerapi.service;
 
-import br.com.gspadaro.ordermanagerapi.dto.order.OrderItemRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.order.OrderRequestDTO;
 import br.com.gspadaro.ordermanagerapi.dto.order.OrderResponseDTO;
 import br.com.gspadaro.ordermanagerapi.exception.ResourceNotFoundException;
 import br.com.gspadaro.ordermanagerapi.mapper.custom.OrderMapper;
-import br.com.gspadaro.ordermanagerapi.model.OrderItem;
 import br.com.gspadaro.ordermanagerapi.repository.OrderRepository;
 import br.com.gspadaro.ordermanagerapi.repository.ProductRepository;
 import br.com.gspadaro.ordermanagerapi.repository.UserRepository;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
