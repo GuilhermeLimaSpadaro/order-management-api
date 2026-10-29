@@ -1,166 +1,428 @@
-# Order Management API
+<div align="center">
 
-API REST para gerenciamento de usuários, produtos, categorias, pedidos e itens de pedido.
+# 🛒 Order Management API
 
-O projeto foi desenvolvido com Java e Spring Boot utilizando Spring Data JPA/Hibernate e banco relacional, com separação em camadas, uso de DTOs e mapeamento com MapStruct.
+[![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Build](https://img.shields.io/badge/Build-Maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
 
-## Tecnologias
+API REST para gerenciamento de pedidos, produtos, categorias e usuários.
 
-- Java 21
-- Spring Boot 4.1.1
-- Spring Web MVC
-- Spring Data JPA
-- Hibernate
-- PostgreSQL
-- H2 Database
-- MapStruct
-- Maven
+[Funcionalidades](#-funcionalidades) •
+[Arquitetura](#-arquitetura) •
+[Endpoints](#-endpoints) •
+[Como Executar](#-como-executar) •
+[Padrões Adotados](#-padr%C3%B5es-adotados)
 
-## Funcionalidades
+</div>
 
-- Cadastro e gerenciamento de usuários
-- Cadastro e gerenciamento de produtos
-- Cadastro e gerenciamento de categorias
-- Criação e gerenciamento de pedidos
-- Consulta de pedidos por usuário
-- Associação de produtos a categorias
-- Associação de pedidos a usuários
-- Itens de pedido com chave composta
-- DTOs de request/response para usuários, produtos, categorias e pedidos
-- Mapeamento entre entidades e DTOs com MapStruct
-- Versionamento da API com prefixo `/api/v1`
-- Tratamento global de exceções
+---
 
-## Modelo de domínio
+## 📖 Sobre o Projeto
 
-```text
-User
- └── Orders
+**Order Management API** é uma API RESTful construída com **Java 21** e **Spring Boot 4.1.1** que gerencia o ciclo completo de pedidos de compra, desde o cadastro de produtos e categorias até a criação e acompanhamento de pedidos com seus itens.
 
-Order
- ├── User
- └── OrderItems
+O projeto segue uma arquitetura em camadas, separando claramente as responsabilidades entre controllers, services, repositories e mappers, com uso de DTOs para isolamento da camada de persistência e validação robusta dos dados de entrada.
 
-OrderItem
- ├── Order
- └── Product
+---
 
-Product
- └── Categories
+## 🛠 Tecnologias
+
+| Categoria | Tecnologia | Versão |
+|---|---|---|
+| **Linguagem** | Java | 21 |
+| **Framework** | Spring Boot | 4.1.1 |
+| **Web** | Spring Web MVC | — |
+| **Persistência** | Spring Data JPA + Hibernate | — |
+| **Banco (Dev)** | H2 Database | In-memory |
+| **Banco (Prod)** | PostgreSQL | 42.7.14 |
+| **Mapper** | MapStruct | 1.6.3 |
+| **Validação** | Jakarta Validation | — |
+| **Build** | Maven | — |
+| **Servidor** | Apache Tomcat | 11.0.27 |
+
+---
+
+## ✨ Funcionalidades
+
+- ✅ **Usuários** — Cadastro, consulta, atualização e remoção
+- ✅ **Produtos** — CRUD completo com nome, descrição, preço e imagem
+- ✅ **Categorias** — CRUD completo para organização dos produtos
+- ✅ **Pedidos** — Criação com itens, consulta por ID e por usuário
+- ✅ **Itens de Pedido** — Vinculação de produtos aos pedidos com quantidade e preço
+- ✅ **Validação** — Validação de dados com Jakarta Validation em todos os endpoints
+- ✅ **Tratamento de Erros** — Handler global com respostas padronizadas em JSON
+- ✅ **Spring Profiles** — Configuração separada para desenvolvimento e produção
+- ✅ **Versionamento** — API versionada com prefixo `/api/v1`
+
+---
+
+## 🏗 Arquitetura
+
+### Diagrama de Camadas
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Client (HTTP)                           │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Controller Layer                           │
+│  @RestController • @Valid • ResponseEntity                 │
+│  UserController • ProductController                        │
+│  CategoryController • OrderController                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Service Layer                            │
+│  @Service • @Transactional • Lógica de negócio             │
+│  UserService • ProductService                              │
+│  CategoryService • OrderService                            │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                     Mapper Layer                            │
+│  MapStruct • DTO ↔ Entity conversion                      │
+│  UserMapper • ProductMapper                                │
+│  CategoryMapper • OrderMapper                              │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Repository Layer                           │
+│  JpaRepository • Spring Data JPA                          │
+│  UserRepository • ProductRepository                        │
+│  CategoryRepository • OrderRepository                      │
+└──────────────────────────┬──────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Database (H2 / PostgreSQL)               │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## Estrutura
+### Modelo de Domínio
 
-```text
-src/main/java/br/com/gspadaro/ordermanagerapi
-├── controller
-├── dto
-│   ├── category
-│   ├── order
-│   ├── product
-│   └── user
-├── exception
-├── mapper
-│   └── custom
-├── model
-│   ├── enums
-│   └── pk
-├── repository
-└── service
+```
+┌──────────┐         ┌──────────┐         ┌──────────┐
+│  User    │────1:N──│  Order   │────1:N──│OrderItem │
+│          │         │          │         │          │
+│  id      │         │  id      │         │  id      │
+│  name    │         │  moment  │         │  qty     │
+│  email   │         │  status  │         │  price   │
+│  phone   │         │  userId  │         │  orderId │
+│  password│         └────┬─────┘         │  prodId  │
+└──────────┘              │               └────┬─────┘
+                          │                    │
+                          │                    │ M:1
+                          │               ┌────▼──────┐
+                          │               │  Product  │
+                          │               │           │
+                          │               │  id       │
+                          │               │  name     │
+                          │               │  price    │
+                          │               │  imgUrl   │
+                          │               └────┬──────┘
+                          │                    │
+                          │               ┌────▼──────────┐
+                          │               │   Category    │
+                          │               │               │
+                          └───────────────│  id           │
+                                         │  name         │
+                                         └───────────────┘
 ```
 
-- `controller` — endpoints REST
-- `service` — regras de negócio
-- `repository` — persistência com Spring Data JPA
-- `mapper` — conversão entre entidades e DTOs (MapStruct)
-- `dto` — objetos de entrada e saída
-- `model` — entidades JPA
-- `exception` — tratamento de exceções
+### Relacionamentos
 
-## Endpoints
+| Relação | Tipo | Descrição |
+|---|---|---|
+| `User` → `Order` | OneToMany | Um usuário pode ter vários pedidos |
+| `Order` → `OrderItem` | OneToMany | Um pedido pode ter vários itens |
+| `OrderItem` → `Order` | ManyToOne | Um item pertence a um pedido |
+| `OrderItem` → `Product` | ManyToOne | Um item referencia um produto |
+| `Product` → `Category` | ManyToMany | Um produto pode estar em várias categorias |
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+src/main/java/br/com/gspadaro/ordermanagerapi/
+├── controller/           # Endpoints REST
+│   ├── UserController.java
+│   ├── ProductController.java
+│   ├── CategoryController.java
+│   └── OrderController.java
+├── dto/                  # Objetos de transferência (records)
+│   ├── category/
+│   │   ├── CategoryRequestDTO.java
+│   │   └── CategoryResponseDTO.java
+│   ├── order/
+│   │   ├── OrderRequestDTO.java
+│   │   ├── OrderResponseDTO.java
+│   │   ├── OrderItemRequestDTO.java
+│   │   └── OrderItemResponseDTO.java
+│   ├── product/
+│   │   ├── ProductRequestDTO.java
+│   │   └── ProductResponseDTO.java
+│   └── user/
+│       ├── UserRequestDTO.java
+│       └── UserResponseDTO.java
+├── exception/            # Tratamento global de exceções
+│   ├── GlobalHandlerException.java
+│   ├── ResourceNotFoundException.java
+│   └── StandardError.java
+├── mapper/               # Conversão entre entidades e DTOs
+│   ├── ObjectMapper.java          # Interface base genérica
+│   └── custom/
+│       ├── UserMapper.java
+│       ├── ProductMapper.java
+│       ├── CategoryMapper.java
+│       └── OrderMapper.java
+├── model/                # Entidades JPA
+│   ├── enums/
+│   │   └── OrderStatus.java
+│   ├── User.java
+│   ├── Product.java
+│   ├── Category.java
+│   ├── Order.java
+│   └── OrderItem.java
+├── repository/           # Persistência com Spring Data JPA
+│   ├── UserRepository.java
+│   ├── ProductRepository.java
+│   ├── CategoryRepository.java
+│   ├── OrderRepository.java
+│   └── OrderItemRepository.java
+├── service/              # Regras de negócio
+│   ├── UserService.java
+│   ├── ProductService.java
+│   ├── CategoryService.java
+│   └── OrderService.java
+└── OrderManagerApiApplication.java
+```
+
+---
+
+## 🔌 Endpoints
+
+> **Base URL:** `http://localhost:8080/api/v1`
 
 ### Users
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/api/v1/users` | Cria um usuário |
-| GET | `/api/v1/users/{id}` | Busca um usuário |
-| PUT | `/api/v1/users/{id}` | Atualiza um usuário |
-| DELETE | `/api/v1/users/{id}` | Remove um usuário |
+| `POST` | `/api/v1/users` | Cria um usuário |
+| `GET` | `/api/v1/users/{id}` | Busca um usuário por ID |
+| `PUT` | `/api/v1/users/{id}` | Atualiza um usuário |
+| `DELETE` | `/api/v1/users/{id}` | Remove um usuário |
 
 ### Products
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/api/v1/products` | Cria um produto |
-| GET | `/api/v1/products/{id}` | Busca um produto |
-| PUT | `/api/v1/products/{id}` | Atualiza um produto |
-| DELETE | `/api/v1/products/{id}` | Remove um produto |
+| `POST` | `/api/v1/products` | Cria um produto |
+| `GET` | `/api/v1/products/{id}` | Busca um produto por ID |
+| `PUT` | `/api/v1/products/{id}` | Atualiza um produto |
+| `DELETE` | `/api/v1/products/{id}` | Remove um produto |
 
 ### Categories
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/api/v1/categories` | Cria uma categoria |
-| GET | `/api/v1/categories/{id}` | Busca uma categoria |
-| PUT | `/api/v1/categories/{id}` | Atualiza uma categoria |
-| DELETE | `/api/v1/categories/{id}` | Remove uma categoria |
+| `POST` | `/api/v1/categories` | Cria uma categoria |
+| `GET` | `/api/v1/categories/{id}` | Busca uma categoria por ID |
+| `PUT` | `/api/v1/categories/{id}` | Atualiza uma categoria |
+| `DELETE` | `/api/v1/categories/{id}` | Remove uma categoria |
 
 ### Orders
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/api/v1/orders` | Cria um pedido |
-| GET | `/api/v1/orders/{id}` | Busca um pedido |
-| GET | `/api/v1/orders/users/{id}` | Lista pedidos de um usuário |
-| PUT | `/api/v1/orders/{id}` | Atualiza um pedido |
-| DELETE | `/api/v1/orders/{id}` | Remove um pedido |
+| `POST` | `/api/v1/orders` | Cria um pedido com itens |
+| `GET` | `/api/v1/orders/{id}` | Busca um pedido por ID |
+| `GET` | `/api/v1/orders/users/{id}` | Lista pedidos de um usuário |
+| `PUT` | `/api/v1/orders/{id}` | Atualiza um pedido |
+| `DELETE` | `/api/v1/orders/{id}` | Remove um pedido |
 
-## Status do pedido
+---
 
-| Código | Status |
+## 📋 Status do Pedido
+
+| Status | Descrição |
 |---|---|
-| 1 | `WAITING_PAYMENT` |
-| 2 | `PAID` |
-| 3 | `SHIPPED` |
-| 4 | `DELIVERED` |
-| 5 | `CANCELED` |
+| `WAITING_PAYMENT` | Aguardando pagamento |
+| `PAID` | Pago |
+| `SHIPPED` | Enviado |
+| `DELIVERED` | Entregue |
+| `CANCELED` | Cancelado |
 
-## DTOs
+---
 
-Todas as operações utilizam DTOs de request/response para separar a representação da API das entidades de persistência, com conversão feita por mappers MapStruct.
+## 📝 Exemplos de Request
 
-Exemplo de criação de pedido:
+### Criar Usuário
+
+```bash
+curl -X POST http://localhost:8080/api/v1/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Guilherme Spadaro",
+    "email": "guilherme@email.com",
+    "phone": "11999999999"
+  }'
+```
+
+### Criar Produto
+
+```bash
+curl -X POST http://localhost:8080/api/v1/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Café Premium",
+    "description": "Café torrado e moído",
+    "price": 29.90,
+    "imgUrl": "https://exemplo.com/cafe.jpg"
+  }'
+```
+
+### Criar Categoria
+
+```bash
+curl -X POST http://localhost:8080/api/v1/categories \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Bebidas"
+  }'
+```
+
+### Criar Pedido
+
+```bash
+curl -X POST http://localhost:8080/api/v1/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "moment": "2026-10-28T19:00:00",
+    "orderStatus": "WAITING_PAYMENT",
+    "userId": 1,
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 2,
+        "price": 29.90
+      },
+      {
+        "productId": 2,
+        "quantity": 1,
+        "price": 15.50
+      }
+    ]
+  }'
+```
+
+---
+
+## ✅ Validações
+
+Os DTOs de request possuem validações com **Jakarta Validation**:
+
+| DTO | Validações |
+|---|---|
+| `UserRequestDTO` | `name` (@NotBlank), `email` (@Email, @NotBlank), `phone` (@NotBlank, @Size min=9, max=9) |
+| `ProductRequestDTO` | `name` (@NotBlank), `description` (@NotBlank), `price` (@Positive, @NotNull) |
+| `CategoryRequestDTO` | `name` (@NotBlank) |
+| `OrderRequestDTO` | `moment` (@NotNull), `orderStatus` (@NotNull), `userId` (@NotNull), `items` (@NotEmpty) |
+
+---
+
+## 🚨 Tratamento de Exceções
+
+A API possui tratamento global de exceções com respostas padronizadas:
+
+| Exceção | Status HTTP | Descrição |
+|---|:---:|---|
+| `ResourceNotFoundException` | 404 | Recurso não encontrado |
+| `MethodArgumentNotValidException` | 400 | Validação dos dados falhou |
+| `MethodArgumentTypeMismatchException` | 400 | Tipo de argumento inválido |
+| `HttpMessageNotReadableException` | 400 | Corpo da requisição inválido |
+
+### Exemplo de Resposta de Erro
 
 ```json
 {
-  "moment": "2026-07-29T14:30:00",
-  "orderStatus": "WAITING_PAYMENT",
-  "userId": 1,
-  "items": []
+  "timeStamp": "2026-10-28T19:00:00Z",
+  "status": 400,
+  "error": "Validation Failed",
+  "path": "/api/v1/users"
 }
 ```
 
-Atualmente, o campo `items` aparece nos DTOs, mas não é persistido na criação ou atualização do pedido. A criação de itens via API pode ser evoluída com DTOs específicos de item de pedido.
+---
 
-## Configuração
+## ⚙️ Configuração
 
-A configuração fica em `application.yml`. Por padrão, a aplicação usa H2 em memória, com console habilitado em `/h2-console`:
+O projeto utiliza **Spring Profiles** para separar as configurações de ambiente.
 
-```text
-jdbc:h2:mem:order_db
+### Arquivo Principal
+
+`application.yml` — Configuração comum:
+
+```yaml
+spring:
+  application:
+    name: order-manager-api
+  profiles:
+    active: dev
+  jpa:
+    open-in-view: false
 ```
 
-O driver do PostgreSQL já está no projeto. Para usá-lo, basta ajustar `spring.datasource` no `application.yml`.
+### Profile de Desenvolvimento
 
-## Como executar
+`application-dev.yml` — H2 em memória com console habilitado:
+
+- **Banco:** `jdbc:h2:mem:order_db`
+- **Console H2:** `/h2-console`
+- **DDL auto:** `update`
+- **SQL log:** habilitado
+
+### Profile de Produção
+
+`application-prod.yml` — Para configurar com PostgreSQL:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/order_db
+    username: postgres
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+```
+
+Para trocar o profile:
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
+```
+
+---
+
+## 🚀 Como Executar
 
 ### Pré-requisitos
 
-- Java 21
-- Maven
+- **Java 21**
+- **Maven**
 
-Para desenvolvimento local, não é necessário instalar nenhum banco: o H2 em memória já é o padrão.
+> Para desenvolvimento local, não é necessário instalar banco de dados: o H2 em memória já é o padrão.
+
+### Rodar a Aplicação
 
 ```bash
 ./mvnw spring-boot:run
@@ -168,17 +430,104 @@ Para desenvolvimento local, não é necessário instalar nenhum banco: o H2 em m
 
 A API fica disponível em:
 
-```text
+```
 http://localhost:8080
 ```
 
-## Roadmap
+### Console H2 (Desenvolvimento)
 
-Melhorias e correções planejadas para o projeto:
+```
+http://localhost:8080/h2-console
+```
 
-- Persistir os itens do pedido (`items`) na criação e atualização, com DTOs específicos de item
-- Adicionar validação dos dados de entrada
+**Credenciais do console:**
+- **JDBC URL:** `jdbc:h2:mem:order_db`
+- **Username:** `sa`
+- **Password:** *(vazio)*
 
-## Autor
+---
+
+## 🗄 Tabelas do Banco
+
+| Tabela | Descrição |
+|---|---|
+| `tb_user` | Usuários do sistema |
+| `products` | Produtos disponíveis |
+| `tb_category` | Categorias de produtos |
+| `orders` | Pedidos realizados |
+| `order_items` | Itens de cada pedido |
+
+---
+
+## 📐 Padrões Adotados
+
+Este projeto segue práticas e convenções amplamente adotadas no mercado:
+
+### Arquitetura
+
+- **Camadas separadas** — Controller → Service → Mapper → Repository
+- **Injeção via construtor** — Imutabilidade e testabilidade
+- **DTOs com records** — Objetos imutáveis e concisos para transferência de dados
+- **MapStruct** — Mapeamento tipo-safe gerado em tempo de compilação
+- **Spring Profiles** — Configuração separada por ambiente
+
+### Nomenclatura
+
+- **Tabelas** — Snake_case (`order_items`, `products`)
+- **Campos** — Snake_case (`user_id`, `order_status`)
+- **Classes Java** — PascalCase (`OrderService`, `UserRequestDTO`)
+- **Variáveis** — camelCase (`orderRepository`, `createdOrder`)
+
+### REST
+
+- **Versionamento** — Prefixo `/api/v1` nos endpoints
+- **HTTP verbs** — POST (criar), GET (ler), PUT (atualizar), DELETE (remover)
+- **Status codes** — 200 (OK), 201 (Created), 204 (No Content), 400 (Bad Request), 404 (Not Found)
+- **URI de criação** — `Location` header com URI do recurso criado
+
+### Validação e Erros
+
+- **Jakarta Validation** — Validação declarativa nos DTOs
+- **Handler global** — Tratamento centralizado de exceções
+- **Resposta padronizada** — Estrutura JSON consistente para erros
+
+### Banco de Dados
+
+- **IDs simples** — `@GeneratedValue` com `IDENTITY`
+- **Relacionamentos** — `@ManyToOne`, `@OneToMany`, `@ManyToMany`
+- **Timestamp automático** — `@CreationTimestamp` para data de criação
+- **Equals/HashCode** — Baseados no ID das entidades
+
+---
+
+## 📅 Roadmap
+
+- [ ] **Spring Security** — Autenticação e autorização com JWT
+- [ ] **Criptografia de senhas** — BCrypt para armazenamento seguro
+- [ ] **Testes unitários** — Cobertura de services e controllers
+- [ ] **Testes de integração** — Endpoints com MockMvc
+- [ ] **OpenAPI/Swagger** — Documentação interativa da API
+- [ ] **Paginação** — Listagem paginada nos endpoints
+- [ ] **PostgreSQL** — Configuração completa do profile de produção
+- [ ] **Docker** — Containerização da aplicação
+- [ ] **CI/CD** — Pipeline de integração contínua
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+## 👤 Autor
 
 **Guilherme Spadaro**
+
+---
+
+<div align="center">
+
+Feito com ❤️ usando Java 21 e Spring Boot 4.1.1
+
+</div>
